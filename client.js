@@ -577,6 +577,10 @@ ${FONT_FACES}
 .oqc-manageView{min-width:0}
 .oqc-manageEmpty{display:flex;align-items:center;justify-content:center;min-height:64px;padding:10px;border:1px dashed var(--dsw-alias-border-l4);border-radius:9px;font-size:11px;color:var(--dsw-alias-label-tertiary)}
 .oqc-crash{display:block;padding:8px 10px;border:1px dashed var(--dsw-alias-border-l4);border-radius:9px;font-size:11px;line-height:1.45;color:var(--dsw-alias-label-error)}
+/* 统一悬停提示：用 data-hint 顶掉原生 title，延迟 0.25s 出气泡。 */
+.oqc-hint{position:relative}
+.oqc-hint::after{content:attr(data-hint);position:absolute;left:50%;top:calc(100% + 5px);z-index:20;transform:translateX(-50%);padding:4px 8px;border-radius:6px;border:.5px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-1,#fff);box-shadow:0 6px 16px -6px rgba(0,0,0,.4);font-size:10.5px;line-height:1.4;font-weight:400;letter-spacing:0;text-transform:none;white-space:nowrap;color:var(--dsw-alias-label-secondary);opacity:0;pointer-events:none;transition:opacity 140ms ease}
+.oqc-hint:hover::after{opacity:1;transition-delay:.25s}
 /* 开关：藏起原生 checkbox，只画轨道和圆点。 */
 .oqc-switch{position:relative;display:inline-flex;align-items:center;gap:8px;font-size:11.5px;line-height:1.3;color:var(--dsw-alias-label-secondary);cursor:pointer;user-select:none}
 .oqc-switchInput{position:absolute;width:1px;height:1px;margin:0;padding:0;opacity:0;pointer-events:none}
@@ -1480,9 +1484,10 @@ ${FONT_FACES}
      */
     function BlockHead({ title, meta, color, head, check }) {
       const hasMeta = meta !== null && meta !== undefined && meta !== '' && meta !== false
+      const hint = head && head['data-hint'] ? ' oqc-hint' : ''
       return h(
         'div',
-        { ...(head || {}), className: 'oqc-blockHead' },
+        { ...(head || {}), className: `oqc-blockHead${hint}` },
         check || null,
         h('span', { className: 'oqc-blockTick', style: color ? { background: color } : undefined }),
         h('span', { className: 'oqc-blockTitle' }, title),
@@ -2300,7 +2305,7 @@ ${FONT_FACES}
       const grip = (id) => ({
         draggable: true,
         'data-grip': 'true',
-        title: t('dragHint'),
+        'data-hint': t('dragHint'),
         onDragStart: (event) => {
           const target = event.target
           if (target && target.closest && target.closest('button,input,a')) {
@@ -2846,9 +2851,9 @@ ${FONT_FACES}
                   'button',
                   {
                     type: 'button',
-                    className: 'oqc-refresh',
+                    className: 'oqc-refresh oqc-hint',
                     'data-busy': busy ? 'true' : 'false',
-                    title: t('refreshTitle'),
+                    'data-hint': t('refreshTitle'),
                     'aria-label': t('refreshTitle'),
                     onClick: onRefresh,
                   },
@@ -2871,23 +2876,30 @@ ${FONT_FACES}
                   'button',
                   {
                     type: 'button',
-                    className: 'oqc-refresh',
-                    title: t('openSettings'),
+                    className: 'oqc-refresh oqc-hint',
+                    'data-hint': t('openSettings'),
                     'aria-label': t('openSettings'),
                     onClick: onOpenSettings,
                   },
                   h(
                     'svg',
-                    { viewBox: '0 0 16 16', 'aria-hidden': true },
+                    { viewBox: '0 0 24 24', 'aria-hidden': true },
                     h('path', {
-                      d: 'M2 5h7M12.5 5H14M2 11h2.5M8 11h6',
+                      d: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066-2.573c-.94-1.543.826-3.31 2.37-2.37c1.024.623 2.369.207 2.572-1.065z',
                       fill: 'none',
                       stroke: 'currentColor',
-                      'stroke-width': '1.9',
+                      'stroke-width': '2.2',
                       'stroke-linecap': 'round',
+                      'stroke-linejoin': 'round',
                     }),
-                    h('circle', { cx: '10.5', cy: '5', r: '1.7', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.9' }),
-                    h('circle', { cx: '5', cy: '11', r: '1.7', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.9' }),
+                    h('circle', {
+                      cx: '12',
+                      cy: '12',
+                      r: '3',
+                      fill: 'none',
+                      stroke: 'currentColor',
+                      'stroke-width': '2.2',
+                    }),
                   ),
                 )
               : null,
@@ -2896,8 +2908,8 @@ ${FONT_FACES}
                   'button',
                   {
                     type: 'button',
-                    className: 'oqc-refresh',
-                    title: t('collapseCard'),
+                    className: 'oqc-refresh oqc-hint',
+                    'data-hint': t('collapseCard'),
                     'aria-label': t('collapseCard'),
                     'aria-expanded': 'true',
                     onClick: onCollapse,
@@ -2906,20 +2918,11 @@ ${FONT_FACES}
                     'svg',
                     { viewBox: '0 0 16 16', 'aria-hidden': true },
                     h('path', {
-                      d: 'M3.4 8.2 8 3.6l4.6 4.6',
+                      d: 'M3.6 8h8.8',
                       fill: 'none',
                       stroke: 'currentColor',
                       'stroke-width': '1.9',
                       'stroke-linecap': 'round',
-                      'stroke-linejoin': 'round',
-                    }),
-                    h('path', {
-                      d: 'M3.4 13 8 8.4l4.6 4.6',
-                      fill: 'none',
-                      stroke: 'currentColor',
-                      'stroke-width': '1.9',
-                      'stroke-linecap': 'round',
-                      'stroke-linejoin': 'round',
                     }),
                   ),
                 )
@@ -2932,10 +2935,10 @@ ${FONT_FACES}
                   'button',
                   {
                     type: 'button',
-                    className: 'oqc-acctSwitch',
+                    className: 'oqc-acctSwitch oqc-hint',
                     'data-busy': accountSwitching ? 'true' : 'false',
                     disabled: accountLocked,
-                    title: accountSwitching ? t('accountSwitching') : busy ? t('refreshing') : t('accountSwitch'),
+                    'data-hint': accountSwitching ? t('accountSwitching') : busy ? t('refreshing') : t('accountSwitch'),
                     onClick: () => setSwitchOpen(!switchOpen),
                   },
                   accountSwitching ? h(Spinner) : null,
@@ -3489,8 +3492,8 @@ ${FONT_FACES}
                 { className: 'oqc-colorField' },
                 h('button', {
                   type: 'button',
-                  className: 'oqc-railColorSwatch',
-                  title: t('railColor'),
+                  className: 'oqc-railColorSwatch oqc-hint',
+                  'data-hint': t('railColor'),
                   'aria-label': t('railColor'),
                   disabled: (settings.style || 'rail') !== 'rail',
                   style: {
@@ -3589,8 +3592,8 @@ ${FONT_FACES}
                     'button',
                     {
                       type: 'button',
-                      className: 'oqc-chipWrap',
-                      title: t('pickColor'),
+                      className: 'oqc-chipWrap oqc-hint',
+                      'data-hint': t('pickColor'),
                       'aria-label': t('pickColor'),
                       onClick: () => setColorEdit({ kind: 'tier', index, value: tier.color }),
                     },
