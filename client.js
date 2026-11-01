@@ -563,11 +563,11 @@ ${FONT_FACES}
 .oqc-optRow{display:flex;align-items:center;gap:6px;min-width:0}
 .oqc-manageRowTitle{flex:none;font-size:13.5px;font-weight:600;line-height:1.3;letter-spacing:.01em;color:var(--dsw-alias-label-secondary)}
 .oqc-blockTip{position:relative;display:inline-flex;align-items:center}
-/* 提示框沿用 .oqc-tipPop 的绝对定位，这里只改宽度和分段排版。 */
-.oqc-tipPopRow{top:22px;left:0;width:252px;max-width:252px;padding:8px 10px;font-size:11px;line-height:1.55;white-space:normal;pointer-events:none}
+/* 「?」的气泡和悬停提示共用 .oqc-pop 的观感，这里只补宽度与分段；出现是即时的。 */
+.oqc-tipPopRow{top:22px;left:0;width:240px;max-width:240px;white-space:normal;pointer-events:none}
 .oqc-tipLine{display:block}
-.oqc-tipLine + .oqc-tipLine{margin-top:4px}
-.oqc-tipPopWide{top:22px;left:auto;right:auto;max-width:260px;white-space:normal;pointer-events:none}
+.oqc-tipLine + .oqc-tipLine{margin-top:3px}
+.oqc-tipPopWide{top:22px;left:auto;right:auto;max-width:240px;white-space:normal;pointer-events:none}
 .oqc-manageBody{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:26px;align-items:start}
 .oqc-manageCfg{display:flex;flex-direction:column;gap:9px;min-width:0}
 .oqc-manageView{min-width:0}
@@ -2639,7 +2639,24 @@ ${FONT_FACES}
       const capDrag = React.useRef(null)
       const blocksRef = React.useRef(null)
       const [capNow, setCapNow] = React.useState(null)
-      const activeCap = capNow !== null ? capNow : capHeight ? capPx : null
+      /** 分块内容的自然高度：限高的真实上限就是它，超过就等于没限高。 */
+      const [naturalPx, setNaturalPx] = React.useState(0)
+      React.useEffect(() => {
+        const node = blocksRef.current
+        if (!node || typeof ResizeObserver === 'undefined') return undefined
+        const measure = () => {
+          const next = node.scrollHeight
+          setNaturalPx((prev) => (Math.abs(prev - next) > 1 ? next : prev))
+        }
+        measure()
+        const observer = new ResizeObserver(measure)
+        observer.observe(node)
+        return () => observer.disconnect()
+      }, [capHeight, capPx])
+      /** 限高只有在「真的会滚」时才生效，等于或超过自然高度就当作没开。 */
+      const cappedPx = capNow !== null ? capNow : capHeight && (naturalPx === 0 || capPx < naturalPx - 1) ? capPx : null
+      const activeCap = cappedPx
+      const capCeiling = naturalPx > 0 ? naturalPx : 1200
       const startCapDrag = (event) => {
         if (!onCapChange) return
         event.preventDefault()
@@ -2649,14 +2666,15 @@ ${FONT_FACES}
           /* 忽略：拿不到捕获也能拖 */
         }
         const natural = blocksRef.current ? blocksRef.current.scrollHeight : 0
-        const start = capHeight ? capPx : natural > 0 ? Math.min(799, natural) : 360
+        const start = capHeight ? capPx : natural > 0 ? natural : 360
         capDrag.current = { y: event.clientY, cap: start, next: start }
         setCapNow(start)
       }
       const moveCapDrag = (event) => {
         const state = capDrag.current
         if (!state) return
-        const next = Math.max(200, Math.min(799, Math.round(state.cap + (state.y - event.clientY))))
+        const ceiling = capCeiling
+        const next = Math.max(120, Math.min(ceiling, Math.round(state.cap + (state.y - event.clientY))))
         state.next = next
         setCapNow(next)
       }
@@ -2672,9 +2690,14 @@ ${FONT_FACES}
         setCapNow(null)
         /** 拖到内容自然高度就没得滚了，这时直接关掉限高，省得留一个空壳设置。 */
         const natural = blocksRef.current ? blocksRef.current.scrollHeight : 0
-        const stillScrolls = natural > 0 ? state.next < natural - 2 : true
+        const stillScrolls = natural > 0 ? state.next < natural - 1 : true
         if (onCapChange) onCapChange({ capPx: state.next, capHeight: stillScrolls })
       }
+      /** 存量设置可能大于当前内容高度：发现了就顺手关掉，别让开关骗人。 */
+      React.useEffect(() => {
+        if (!onCapChange || !capHeight || naturalPx === 0) return
+        if (capPx >= naturalPx - 1) onCapChange({ capHeight: false })
+      }, [capHeight, capPx, naturalPx, onCapChange])
       /** 设置页的一行：标题 + 说明在左，开关列在中，分块原样在右。 */
       const manageRow = (id, index) => {
         const over = markerOf(index)
@@ -3530,8 +3553,8 @@ ${FONT_FACES}
               h('input', {
                 className: 'oqc-field oqc-fieldNum',
                 type: 'number',
-                min: 200,
-                max: 799,
+                min: 120,
+                max: 1200,
                 step: 20,
                 value: settings.capPx,
                 disabled: !settings.capHeight,
@@ -3539,12 +3562,8 @@ ${FONT_FACES}
                 onChange: (event) => {
                   const value = Number(event.target.value)
                   if (!Number.isFinite(value)) return
-                  /** 上限 799：填到 800 就等于不限高，直接不开启。 */
-                  if (value >= 800) {
-                    prefs.set({ capPx: 799, capHeight: false })
-                    return
-                  }
-                  prefs.set({ capPx: Math.max(200, Math.round(value)) })
+                  /** 真正的上限是卡片内容的自然高度，这里只做范围保护；超过自然高度时卡片会自动关掉限高。 */
+                  prefs.set({ capPx: Math.max(120, Math.min(1200, Math.round(value))) })
                 },
               }),
               h('span', { className: 'oqc-rangePct' }, 'px'),
