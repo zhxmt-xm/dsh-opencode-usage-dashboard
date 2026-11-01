@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/8a04506/icon.svg" width="88" alt="OpenCode 用量面板 logo">
+  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/ed33013/icon.svg" width="88" alt="OpenCode 用量面板 logo">
 </div>
 
 <h1 align="center">OpenCode 用量面板</h1>
@@ -26,7 +26,7 @@
 > 这是 DeepSeek Harness 的第三方插件，数据来自 OpenCode 官方。
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/8a04506/docs/screenshot-card.png" alt="侧栏用量卡片：用量、额度、预测、趋势、模型五个分块" width="320">
+  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/ed33013/docs/screenshot-card.png" alt="侧栏用量卡片：用量、额度、预测、趋势、模型五个分块" width="320">
   <br>
   <sub>侧栏卡片（浅色主题，示意数据）：用量 · 额度 · 预测 · 趋势 · 模型</sub>
 </div>
@@ -53,13 +53,13 @@ OpenCode 的额度、花费和用量分散在几个接口里：Go 订阅的滚�
 卡片放在侧栏设置按钮上方；侧栏收起时退化为一个百分比/金额小方块，展开后按偏好顺序显示分块，默认只开「用量」和「额度重置时间」，其余在设置里随时打开。每个分块标题右侧有个箭头，点一下就把这一块收成一行（只留标题和它的关键数据，例如用量显示当日花费、额度显示本月已用、趋势显示最近一根、模型显示第一名），再点展开。卡片右上角还有收起按钮，收起后只剩一行「OpenCode + 本月剩余（没有月度额度时显示总花费）」，再点一下展开。卡片顶部有一条拖拽热区（悬停露出一小条横线），上下拖动直接调卡片限高，拖到内容放满、不再需要滚动时会自动关掉限高。卡片顶部是账户入口：点账户名可切换组织和服务账号，右侧是刷新、设置与收起按钮。
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/8a04506/docs/shots/card-resize.png" alt="卡片顶部拖拽条：悬停出现「上下拖动调整卡片限高」提示" width="420">
+  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/ed33013/docs/shots/card-resize.png" alt="卡片顶部拖拽条：悬停出现「上下拖动调整卡片限高」提示" width="420">
 </p>
 
 #### 用量
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/8a04506/docs/shots/card-today.png" alt="用量分块：本月剩余油表，以及今日、本周、本月的花费与请求数" width="300">
+  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/ed33013/docs/shots/card-today.png" alt="用量分块：本月剩余油表，以及今日、本周、本月的花费与请求数" width="300">
 </p>
 
 - 今日花费、请求数、tokens；
@@ -70,7 +70,7 @@ OpenCode 的额度、花费和用量分散在几个接口里：Go 订阅的滚�
 #### 额度
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/8a04506/docs/shots/card-quota.png" alt="额度分块：滚动、每周、每月三个窗口与重置倒计时" width="300">
+  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/ed33013/docs/shots/card-quota.png" alt="额度分块：滚动、每周、每月三个窗口与重置倒计时" width="300">
 </p>
 
 - 滚动 5 小时、本周、本月三个窗口；
@@ -80,7 +80,7 @@ OpenCode 的额度、花费和用量分散在几个接口里：Go 订阅的滚�
 #### 预测
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/8a04506/docs/shots/card-forecast.png" alt="预测分块：实测花费曲线、预测虚线与 50%/100% 预计日期" width="300">
+  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/ed33013/docs/shots/card-forecast.png" alt="预测分块：实测花费曲线、预测虚线与 50%/100% 预计日期" width="300">
 </p>
 
 - 按当前计费周期的花费速度做线性外推；
@@ -90,7 +90,7 @@ OpenCode 的额度、花费和用量分散在几个接口里：Go 订阅的滚�
 #### 趋势
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/8a04506/docs/shots/card-trend.png" alt="趋势分块：7 天或 24 小时的花费、tokens、请求数柱状图" width="300">
+  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/ed33013/docs/shots/card-trend.png" alt="趋势分块：7 天或 24 小时的花费、tokens、请求数柱状图" width="300">
 </p>
 
 - 7 天 / 24 小时切换；
@@ -100,7 +100,7 @@ OpenCode 的额度、花费和用量分散在几个接口里：Go 订阅的滚�
 #### 模型
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/8a04506/docs/shots/card-models.png" alt="模型分块：按花费排序的模型条形图" width="300">
+  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/ed33013/docs/shots/card-models.png" alt="模型分块：按花费排序的模型条形图" width="300">
 </p>
 
 - 按花费排序，条形长度按最高花费归一化；
@@ -110,7 +110,7 @@ OpenCode 的额度、花费和用量分散在几个接口里：Go 订阅的滚�
 #### 分块收起
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/8a04506/docs/shots/card-part-collapsed.png" alt="分块收起：趋势和模型只留一行标题，右侧显示关键数据" width="300">
+  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/ed33013/docs/shots/card-part-collapsed.png" alt="分块收起：趋势和模型只留一行标题，右侧显示关键数据" width="300">
 </p>
 
 - 每个分块标题右侧有一个箭头，点一下收成一行，再点一下展开；
@@ -130,7 +130,7 @@ OpenCode 的额度、花费和用量分散在几个接口里：Go 订阅的滚�
 #### 账户
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/8a04506/docs/shots/settings-account.png" alt="设置页账户面板：按组织分组的账户、服务账号、刷新间隔" width="640">
+  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/ed33013/docs/shots/settings-account.png" alt="设置页账户面板：按组织分组的账户、服务账号、刷新间隔" width="640">
 </p>
 
 - 账户按组织分组，同一组织的 Key 合成一张卡；
@@ -141,7 +141,7 @@ OpenCode 的额度、花费和用量分散在几个接口里：Go 订阅的滚�
 #### 显示
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/8a04506/docs/shots/settings-display.png" alt="设置页显示面板：卡片色条开关、色条颜色与四档进度条" width="640">
+  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/ed33013/docs/shots/settings-display.png" alt="设置页显示面板：卡片色条开关、色条颜色与四档进度条" width="640">
 </p>
 
 - 卡片样式：开关控制是否显示左侧色条，旁边选色条颜色；
@@ -152,7 +152,7 @@ OpenCode 的额度、花费和用量分散在几个接口里：Go 订阅的滚�
 #### 卡片展示
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/8a04506/docs/shots/settings-preview.png" alt="设置页卡片展示面板：一行一个分块，左边是开关，右边是侧栏里的实时渲染" width="640">
+  <img src="https://raw.githubusercontent.com/zhxmt-xm/dsh-opencode-usage-dashboard/ed33013/docs/shots/settings-preview.png" alt="设置页卡片展示面板：一行一个分块，左边是开关，右边是侧栏里的实时渲染" width="640">
 </p>
 
 - 一行一个分块：左边是该块的开关，右边就是它在侧栏里的真实渲染；
