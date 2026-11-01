@@ -188,7 +188,7 @@ OpenCode 的额度、花费和用量分散在几个接口里：Go 订阅的滚�
 插件已经上架 DSH 插件市场：
 
 1. 打开 DSH → 设置 → **插件**（或插件市场）；
-2. 搜索 `dsh-opencode-usage-dashboard` 或「OpenCode 用量看板」；
+2. 搜索 `dsh-opencode-usage-dashboard`；也可以搜「OpenCode 额度」；
 3. 点 **安装**，装完在侧栏就能看到卡片。
 
 市场里的版本号跟随 npm 发布；`1.2.0` 之后的功能（分块收起、统一提示气泡等）需要市场里的版本 ≥ 1.2.0。
