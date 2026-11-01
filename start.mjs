@@ -9,6 +9,13 @@
  * 包名已从 @local/dsh-opencode-quota 迁移到 dsh-opencode-usage-dashboard；
  * 脚本会顺手清理旧包名留下的依赖/junction。
  *
+ * 不用先退出 DSH：`dsh plugin` 只是把参数转发给 profile 目录里的 pnpm，
+ * 安装动作和运行中的 DSH 不冲突。profile 的 base 层默认启用 `@deepseek-ai/dsh-hmr`
+ * （`root` 为空，只盯 profile manifest 与 patch 文件），插件管理器改完包会走
+ * `hmr.reconcileProfile()` 就地重新组合，所以 profile 一变 DSH 自己就会换。
+ * 只有 reconcile 报 no-hmr / package-moved / host-module 这类原因时才需要重启。
+ * 脚本因此不拦进程；真被文件占用（EBUSY/EPERM）时再提示退出 DSH 重跑。
+ *
  * 为什么要先删目录：DSH 当前插件管理器卸载 `link:` 依赖时不会删除
  * `node_modules` 里的 junction；直接 add 另一种来源会 EPERM。
  *
@@ -93,7 +100,6 @@ async function chooseSource() {
   const rl = createInterface({ input: process.stdin, output: process.stdout })
   const state = installedState()
   console.log(`当前安装：${currentLabel()}`)
-  console.log('切换前请先完全退出 DSH。')
   console.log('')
   console.log(`  1) 本地 link${state === 'link' ? '（当前）' : ''}   ${repoRoot}`)
   console.log(`  2) GitHub${state === 'github' ? '（当前）' : ''}      ${REPO_SPEC}`)
@@ -117,16 +123,19 @@ if (state === source) {
   console.log(`当前已经是${stateLabel(state)}，将重新安装。`)
 }
 
-if (process.platform === 'win32') {
+/** DSH 是否在跑：只用来决定结尾提示什么，不阻止安装。 */
+function dshRunning() {
+  if (process.platform !== 'win32') {
+    const check = spawnSync('pgrep', ['-f', 'DeepSeek Harness|dsh (web|desktop)'], { encoding: 'utf8' })
+    return check.status === 0 && (check.stdout || '').trim() !== ''
+  }
   const check = spawnSync('tasklist', ['/FI', 'IMAGENAME eq DeepSeek Harness.exe', '/NH'], {
     encoding: 'utf8',
     windowsHide: true,
   })
-  if (check.status === 0 && /DeepSeek Harness\.exe/i.test(check.stdout || '')) {
-    console.error('DSH 还在运行。请先完全退出 DeepSeek Harness，再运行本脚本。')
-    process.exit(1)
-  }
+  return check.status === 0 && /DeepSeek Harness\.exe/i.test(check.stdout || '')
 }
+const dshLive = dshRunning()
 
 /** 用当前平台的 shell 调用 dsh plugin。 */
 function runDsh(args, childEnv = process.env) {
@@ -173,6 +182,9 @@ function removeTemps(dir) {
 
 console.log('')
 console.log(`目标：${source === 'github' ? 'GitHub 版' : '本地 link 版'}（${PACKAGE_NAME}）`)
+if (dshLive) {
+  console.log('DSH 正在运行：安装不受影响，profile 一变它会自己重新组合插件。')
+}
 
 console.log('[1/3] 卸载当前版本…')
 const deps = dependencyNames()
@@ -196,10 +208,19 @@ console.log('[2/3] 清理 node_modules 残留…')
 if (pathState(oldPkgDir) !== 'none' && pathState(pkgDir) === 'none') {
   console.log(`检测到旧包名 ${OLD_PACKAGE_NAME}，清理后会安装 ${PACKAGE_NAME}。`)
 }
-removeInstalled(pkgDir)
-removeInstalled(oldPkgDir)
-removeTemps(nodeModulesDir)
-removeTemps(oldLocalDir)
+try {
+  removeInstalled(pkgDir)
+  removeInstalled(oldPkgDir)
+  removeTemps(nodeModulesDir)
+  removeTemps(oldLocalDir)
+} catch (error) {
+  if (error && ['EPERM', 'EBUSY', 'ENOTEMPTY', 'EACCES'].includes(error.code)) {
+    console.error(`清理失败（${error.code}）：${error.path || '目录'} 正被占用。`)
+    if (dshLive) console.error('请退出 DSH 后重跑本命令；如果仍失败，手动删掉上面这个路径。')
+    process.exit(1)
+  }
+  throw error
+}
 
 /** 中断的插件操作会留下 run.json，清掉避免下次被当成“操作进行中”。 */
 console.log('清理 plugin-manager 运行标记…')
@@ -226,9 +247,14 @@ if (result.error) {
 }
 if (result.status !== 0) {
   console.error(`dsh plugin 退出码 ${result.status}`)
+  if (dshLive) console.error('如果上面是 EBUSY/EPERM，说明 DSH 正在占用目录：退出 DSH 后重跑本命令。')
   process.exit(result.status || 1)
 }
 
 console.log('')
 console.log(`完成：profile "${profile}" 现在使用 ${source === 'github' ? 'GitHub 版' : '本地 link 版'}（${PACKAGE_NAME}）。`)
-console.log('启动 DSH 即可。')
+if (dshLive) {
+  console.log('DSH 会按新 profile 重新组合；如果它提示「请重启 DSH 使更改生效」再重启。')
+} else {
+  console.log('启动 DSH 即可。')
+}

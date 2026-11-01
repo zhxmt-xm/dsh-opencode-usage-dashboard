@@ -184,9 +184,18 @@ flowchart LR
 | `style` | `'rail'` | `rail` / `panel` |
 | `railColor` | `#3b82f6` | 色条颜色 |
 | `order` | 五块固定顺序 | 侧栏分块顺序 |
-| `hidden` | `[]` | 侧栏隐藏的分块 |
+| `hidden` | `['forecast','trend','models']` | 侧栏隐藏的分块；默认只显示用量与额度 |
+| `blocksVersion` | `1` | 默认分块集合的迁移标记 |
+| `collapsed` | `false` | 侧栏卡片是否手动收起 |
+| `capHeight` | `false` | 是否给分块区限高 |
+| `capPx` | `360` | 限高像素（200–799；填到 800 视为不限高，直接关闭） |
+| `todayWeek` | `true` | 用量块是否显示「本周」行 |
+| `todayMonth` | `true` | 用量块是否显示「本月」行 |
+| `todayCompact` | `false` | 用量块是否用简化版式（只留今日） |
 
 读偏好时会校验类型、补齐缺失分块、忽略未知 id；坏数据回落到默认值。旧版 `accent` 会迁移到第一档颜色。
+
+`hidden` 的默认值在 1.1.0 从「全显示」改成「用量 + 额度」，迁移只在 `blocksVersion` 缺失且存下来的 `hidden` 为空数组（＝从没动过分块）时生效；动过分块的人保留自己的选择。用户改动任意偏好后会写回 `blocksVersion`，此后不再迁移。
 
 ### 设置导航图标
 

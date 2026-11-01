@@ -46,7 +46,7 @@ body{font-family:"Segoe UI","Microsoft YaHei UI","Microsoft YaHei",system-ui,san
 .oqc-root{display:flex;flex-direction:column;width:100%;min-width:0;align-self:stretch;flex:1 1 auto}
 .oqc-card[data-loading=true] .oqc-slot{opacity:.5;transition:opacity 120ms ease}
 .oqc-acctSwitch .oqc-spinner,.oqc-sub .oqc-spinner{width:10px;height:10px;border-width:1px}
-.oqc-card{--oqc-font:"Microsoft YaHei UI","Microsoft YaHei","PingFang SC","Hiragino Sans GB","Segoe UI",system-ui,sans-serif;font-family:var(--oqc-font);box-sizing:border-box;width:100%;display:flex;flex-direction:column;gap:9px;padding:11px 11px 9px;margin:2px 0 6px;border:.5px solid var(--dsw-alias-border-l2);border-radius:11px;background:color-mix(in srgb,var(--dsw-alias-bg-layer-3) 11%,transparent);padding-left:10px;padding-right:10px}
+.oqc-card{--oqc-font:"Microsoft YaHei UI","Microsoft YaHei","PingFang SC","Hiragino Sans GB","Segoe UI",system-ui,sans-serif;font-family:var(--oqc-font);box-sizing:border-box;width:100%;display:flex;flex-direction:column;gap:9px;padding:11px 11px 9px;margin:2px 0 6px;border:.5px solid var(--dsw-alias-border-l2);border-radius:11px;background:color-mix(in srgb,var(--dsw-alias-bg-layer-3) 11%,transparent);padding-left:10px;padding-right:10px;position:relative}
 .oqc-card[data-variant=full]{gap:12px;padding:18px 20px 16px;margin:0;border-radius:13px}
 /* 分块：标题（左侧色标 + 字距标题 + 渐隐分隔线 + 右侧数值）把内容切成独立章节。 */
 .oqc-block{--oqc-block-bg:color-mix(in srgb,var(--dsw-alias-bg-layer-3) 78%,transparent);--oqc-block-bg-hover:color-mix(in srgb,var(--dsw-alias-bg-layer-3) 96%,transparent);--oqc-block-border:color-mix(in srgb,var(--dsw-alias-label-primary) 22%,transparent);--oqc-block-border-hover:color-mix(in srgb,var(--dsw-alias-label-primary) 42%,transparent);display:flex;flex-direction:column;gap:10px;min-width:0;padding:10px 9px;border-radius:9px;border:1px solid var(--oqc-block-border);background:var(--oqc-block-bg);box-shadow:0 1px 2px color-mix(in srgb,var(--dsw-alias-label-primary) 7%,transparent);transition:background-color 140ms ease,border-color 140ms ease}
@@ -56,9 +56,9 @@ body{font-family:"Segoe UI","Microsoft YaHei UI","Microsoft YaHei",system-ui,san
 .oqc-slot{position:relative;display:flex;flex-direction:column;min-width:0}
 .oqc-slot:empty{display:none}
 .oqc-slot[data-dragging=true]{opacity:.4}
-.oqc-slot::before{content:'';position:absolute;left:2px;right:2px;height:2px;border-radius:2px;background:#3b82f6;opacity:0;pointer-events:none;transition:opacity 120ms ease;z-index:3}
-.oqc-slot[data-over=before]::before{top:-5px;opacity:1}
-.oqc-slot[data-over=after]::before{bottom:-5px;opacity:1}
+/* 落点提示：贴在这一行的上下沿，一条线，缝里不会再出现第二条。 */
+.oqc-slot[data-over=before]{box-shadow:inset 0 2px 0 #3b82f6}
+.oqc-slot[data-over=after]{box-shadow:inset 0 -2px 0 #3b82f6}
 .oqc-blockHead[data-grip=true]{cursor:grab}
 .oqc-blockHead[data-grip=true]:active{cursor:grabbing}
 .oqc-card[data-style=rail] .oqc-block{--oqc-rail:var(--oqc-rail-color,#3b82f6);border-left:2px solid var(--oqc-rail);border-radius:8px}
@@ -128,7 +128,7 @@ body{font-family:"Segoe UI","Microsoft YaHei UI","Microsoft YaHei",system-ui,san
 .oqc-card[data-variant=full] .oqc-spendValue{font-size:20px}
 .oqc-spendMeta{display:flex;align-items:center;gap:10px;font-size:10px;line-height:1.4;color:var(--dsw-alias-label-tertiary)}
 .oqc-card[data-variant=full] .oqc-spendMeta{font-size:12px;gap:14px}
-.oqc-chart{display:flex;flex-direction:column;gap:5px}
+.oqc-chart{display:flex;flex-direction:column;gap:5px;container-type:inline-size}
 .oqc-chart.oqc-forecast{padding-top:4px}
 .oqc-chartBody{display:flex;gap:7px;min-width:0}
 .oqc-yAxis{position:relative;flex:none;width:30px;height:52px;font-size:9px;line-height:1;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-tertiary)}
@@ -170,6 +170,9 @@ body{font-family:"Segoe UI","Microsoft YaHei UI","Microsoft YaHei",system-ui,san
 .oqc-xTick{white-space:nowrap}
 .oqc-xAxis[data-dense=day]{font-size:8px}
 .oqc-xAxis[data-dense=hour]{font-size:7.5px;letter-spacing:-.02em}
+/* 24 小时轴按图表实际宽度抽稀：默认全标，窄了才隔一个 / 隔两个。 */
+@container (max-width: 268px){.oqc-xAxis[data-dense=hour] .oqc-xTick{visibility:hidden}.oqc-xAxis[data-dense=hour] .oqc-xTick:nth-child(2n+1){visibility:visible}}
+@container (max-width: 152px){.oqc-xAxis[data-dense=hour] .oqc-xTick:nth-child(2n+1){visibility:hidden}.oqc-xAxis[data-dense=hour] .oqc-xTick:nth-child(3n+1){visibility:visible}}
 .oqc-xAxis{position:relative;display:flex;gap:2px;height:12px;margin-left:37px;font-size:9px;line-height:1;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-tertiary)}
 .oqc-xAxis .oqc-xTick{position:static;top:auto;transform:none;flex:1 1 0;min-width:0;text-align:center}
 .oqc-chart[data-size=full] .oqc-xAxis{margin-left:45px;font-size:10px;height:13px}
@@ -188,7 +191,6 @@ body{font-family:"Segoe UI","Microsoft YaHei UI","Microsoft YaHei",system-ui,san
 .oqc-modelFill{display:block;height:100%;border-radius:999px}
 .oqc-modelCost{flex:none;font-family:inherit;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-primary)}
 .oqc-controls{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.oqc-check{flex:none;width:12px;height:12px;margin:0 2px 0 0;padding:0;accent-color:#2ea043;cursor:pointer}
 .oqc-toggle{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--dsw-alias-label-secondary);white-space:nowrap;cursor:pointer}
 .oqc-toggle input[type=checkbox]{accent-color:#2ea043}
 .oqc-colorField{position:relative;flex:none;display:flex;align-items:center}
@@ -252,13 +254,81 @@ body{font-family:"Segoe UI","Microsoft YaHei UI","Microsoft YaHei",system-ui,san
 .oqc-rail{--oqc-font:"Microsoft YaHei UI","Microsoft YaHei","PingFang SC","Hiragino Sans GB","Segoe UI",system-ui,sans-serif;display:grid;place-items:center;width:34px;height:34px;margin:0 auto 4px;border:.5px solid var(--dsw-alias-border-l2);border-radius:8px;background:color-mix(in srgb,var(--dsw-alias-bg-layer-3) 42%,transparent);color:var(--dsw-alias-label-secondary);font-family:var(--oqc-font);font-size:10px;font-weight:500;font-variant-numeric:tabular-nums;cursor:pointer;transition:color 140ms ease,background 140ms ease}
 .oqc-rail:hover{color:var(--dsw-alias-label-primary);background:color-mix(in srgb,var(--dsw-alias-label-primary) 6%,transparent)}
 .oqc-rail:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--dsw-alias-brand-primary) 26%,transparent)}
+/* 手动收起后的一行条：沿用 rail 的尺寸语言，横向铺满侧栏。 */
+.oqc-collapse{--oqc-font:"Microsoft YaHei UI","Microsoft YaHei","PingFang SC","Hiragino Sans GB","Segoe UI",system-ui,sans-serif;display:flex;align-items:center;gap:6px;width:100%;height:30px;margin:2px 0 6px;padding:0 9px;border:.5px solid var(--dsw-alias-border-l2);border-radius:9px;background:color-mix(in srgb,var(--dsw-alias-bg-layer-3) 42%,transparent);color:var(--dsw-alias-label-secondary);font-family:var(--oqc-font);font-size:11px;cursor:pointer;transition:background 140ms ease,color 140ms ease}
+.oqc-collapse:hover{background:color-mix(in srgb,var(--dsw-alias-label-primary) 6%,transparent);color:var(--dsw-alias-label-primary)}
+.oqc-collapse:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--dsw-alias-brand-primary) 26%,transparent)}
+.oqc-collapseText{flex:1;min-width:0;text-align:left;font-weight:500;color:var(--dsw-alias-label-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oqc-collapseValue{flex:none;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+/* 卡片顶部拖拽条：绝对定位浮在卡片顶部留白里，不占布局；hover 才露出横条。 */
+.oqc-resize{position:absolute;left:8px;right:8px;top:1px;height:7px;border-radius:6px;cursor:ns-resize;touch-action:none;z-index:2}
+.oqc-resize::after{content:'';position:absolute;left:50%;top:2px;width:34px;height:3px;margin-left:-17px;border-radius:999px;background:color-mix(in srgb,var(--dsw-alias-label-primary) 24%,transparent);opacity:0;transition:opacity 140ms ease}
+.oqc-resize::before{content:attr(data-tip);position:absolute;left:50%;top:12px;z-index:12;transform:translateX(-50%);padding:4px 8px;border-radius:6px;border:.5px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-1,#fff);box-shadow:0 6px 16px -6px rgba(0,0,0,.4);font-size:10.5px;line-height:1.4;white-space:nowrap;color:var(--dsw-alias-label-secondary);opacity:0;pointer-events:none;transition:opacity 140ms ease}
+.oqc-resize:hover::before{opacity:1;transition-delay:.35s}
+.oqc-resize:hover::after,.oqc-card[data-resizing=true] .oqc-resize::after{opacity:1}
+.oqc-card[data-resizing=true]{user-select:none;cursor:ns-resize}
+/* 分块列表：限高只滚这一层，卡片头和账户菜单不会被裁。 */
+.oqc-blocks{display:flex;flex-direction:column;gap:9px;min-width:0}
+.oqc-blocks[data-scroll=true]{overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding-right:1px;margin-right:-1px}
+.oqc-blocks[data-scroll=true]::-webkit-scrollbar{width:8px;height:8px}
+.oqc-blocks[data-scroll=true]::-webkit-scrollbar-track{background:transparent}
+.oqc-blocks[data-scroll=true]::-webkit-scrollbar-button{display:none;width:0;height:0}
+.oqc-blocks[data-scroll=true]::-webkit-scrollbar-corner{background:transparent}
+.oqc-blocks[data-scroll=true]::-webkit-scrollbar-thumb{background-color:color-mix(in srgb,var(--dsw-alias-label-primary) 14%,transparent);border:2px solid transparent;background-clip:content-box;border-radius:999px;transition:background-color 160ms ease}
+.oqc-blocks[data-scroll=true]::-webkit-scrollbar-thumb:hover{background-color:color-mix(in srgb,var(--dsw-alias-label-primary) 26%,transparent)}
+/* 简化版：油表缩小在左，今日三项各占一行在右。 */
+.oqc-compact{display:flex;align-items:center;gap:22px;min-width:0}
+.oqc-gaugeMini{width:60px;height:36px;margin:0;align-self:auto;flex:none}
+.oqc-gaugeMini .oqc-gaugeArc{width:60px;height:36px}
+.oqc-compactGauge{flex:none;display:flex;flex-direction:column;align-items:center;gap:1px}
+.oqc-cmpCaption{font-size:8px;line-height:1.1;color:var(--dsw-alias-label-tertiary);white-space:nowrap}
+.oqc-compactRows{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.oqc-cmpRow{display:flex;align-items:baseline;gap:8px;min-width:0}
+.oqc-cmpKey{flex:none;font-size:9.5px;line-height:1.45;color:var(--dsw-alias-label-tertiary);white-space:nowrap}
+.oqc-cmpValue{flex:1;min-width:0;text-align:right;font-size:10.5px;line-height:1.45;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .oqc-page{--oqc-font:"Microsoft YaHei UI","Microsoft YaHei","PingFang SC","Hiragino Sans GB","Segoe UI",system-ui,sans-serif;position:relative;font-family:var(--oqc-font);display:flex;flex-direction:column;gap:18px;padding:4px 2px 28px;max-width:640px}
 .oqc-pageTitle{margin:0;display:flex;align-items:center;gap:8px;font-size:15px;font-weight:500;line-height:1.23;color:var(--dsw-alias-label-primary)}
 .oqc-logo{flex:none;display:block;border-radius:4px}
 .oqc-desc{margin:0;font-size:12.5px;font-weight:400;line-height:1.6;color:var(--dsw-alias-label-secondary)}
 .oqc-panel{display:flex;flex-direction:column;gap:10px;padding:14px 16px;border:.5px solid var(--dsw-alias-border-l2);border-radius:10px;background:color-mix(in srgb,var(--dsw-alias-bg-layer-3) 40%,transparent)}
-.oqc-preview{display:flex;justify-content:center;padding:2px 0 4px}
-.oqc-preview > .oqc-card{width:100%;max-width:340px;margin:0}
+.oqc-preview{display:block;padding:0}
+.oqc-preview > .oqc-card{width:100%;max-width:none;margin:0}
+/* 卡片展示：一行一个分块，左边开关，右边是侧栏里的真实渲染。 */
+.oqc-card[data-manage=true]{padding:0;border:0;background:none;box-shadow:none;margin:0;gap:0}
+.oqc-card[data-manage=true] .oqc-blocks{gap:0}
+.oqc-card[data-manage=true] .oqc-manageRow{display:block;padding:14px 0 15px;border-top:1px solid var(--dsw-alias-border-l2)}
+.oqc-card[data-manage=true] .oqc-manageRow:first-child{border-top:0;padding-top:2px}
+/* 拖拽和卡片一致：直接拖标题这一行。 */
+.oqc-manageRowHead{position:relative;display:flex;align-items:center;gap:6px;min-width:0;margin:0 0 10px;cursor:grab;user-select:none}
+.oqc-manageRowHead:active{cursor:grabbing}
+/* 拖拽点：3 行点阵铺满标题右侧，hover 才显形；不渐变，颜色放淡。 */
+.oqc-gripDots{flex:1 1 auto;min-width:24px;height:13px;margin-left:9px;opacity:0;color:var(--dsw-alias-label-tertiary);background-image:radial-gradient(circle at 1px 1px,currentColor 1px,transparent 1.4px);background-size:4px 4px;background-position:1px 2px;background-repeat:repeat;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 3px),transparent calc(100% - 3px));mask-image:linear-gradient(90deg,#000 calc(100% - 3px),transparent calc(100% - 3px));transition:opacity 140ms ease}
+.oqc-manageRowHead:hover .oqc-gripDots{opacity:.35}
+.oqc-manageRowHead::after{content:attr(data-tip);position:absolute;left:50%;top:calc(100% + 4px);z-index:9;transform:translateX(-50%);padding:4px 8px;border-radius:6px;border:.5px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-1,#fff);box-shadow:0 6px 16px -6px rgba(0,0,0,.4);font-size:10.5px;line-height:1.4;white-space:nowrap;color:var(--dsw-alias-label-secondary);opacity:0;pointer-events:none;transition:opacity 140ms ease}
+.oqc-manageRowHead:hover::after{opacity:1;transition-delay:.4s}
+.oqc-optRow{display:flex;align-items:center;gap:6px;min-width:0}
+.oqc-manageRowTitle{flex:none;font-size:13.5px;font-weight:600;line-height:1.3;letter-spacing:.01em;color:var(--dsw-alias-label-secondary)}
+.oqc-blockTip{position:relative;display:inline-flex;align-items:center}
+/* 提示框沿用 .oqc-tipPop 的绝对定位，这里只改宽度和分段排版。 */
+.oqc-tipPopRow{top:22px;left:0;width:252px;max-width:252px;padding:8px 10px;font-size:11px;line-height:1.55;white-space:normal;pointer-events:none}
+.oqc-tipLine{display:block}
+.oqc-tipLine + .oqc-tipLine{margin-top:4px}
+.oqc-tipPopWide{top:22px;left:auto;right:auto;max-width:260px;white-space:normal;pointer-events:none}
+.oqc-manageBody{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:26px;align-items:start}
+.oqc-manageCfg{display:flex;flex-direction:column;gap:9px;min-width:0}
+.oqc-manageView{min-width:0}
+.oqc-manageEmpty{display:flex;align-items:center;justify-content:center;min-height:64px;padding:10px;border:1px dashed var(--dsw-alias-border-l4);border-radius:9px;font-size:11px;color:var(--dsw-alias-label-tertiary)}
+.oqc-crash{display:block;padding:8px 10px;border:1px dashed var(--dsw-alias-border-l4);border-radius:9px;font-size:11px;line-height:1.45;color:var(--dsw-alias-label-error)}
+/* 开关：藏起原生 checkbox，只画轨道和圆点。 */
+.oqc-switch{position:relative;display:inline-flex;align-items:center;gap:8px;font-size:11.5px;line-height:1.3;color:var(--dsw-alias-label-secondary);cursor:pointer;user-select:none}
+.oqc-switchInput{position:absolute;width:1px;height:1px;margin:0;padding:0;opacity:0;pointer-events:none}
+.oqc-switchTrack{position:relative;flex:none;width:40px;height:22px;border-radius:999px !important;corner-shape:round !important;overflow:hidden;background:color-mix(in srgb,var(--dsw-alias-label-primary) 16%,transparent);transition:background 140ms ease}
+.oqc-switchKnob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50% !important;corner-shape:round !important;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.22);transition:transform 140ms ease}
+.oqc-switchInput:checked + .oqc-switchTrack{background:var(--oqc-switch-on,var(--dsw-alias-brand-primary))}
+.oqc-switchInput:checked + .oqc-switchTrack .oqc-switchKnob{transform:translateX(18px)}
+.oqc-switchInput:focus-visible + .oqc-switchTrack{box-shadow:0 0 0 3px color-mix(in srgb,var(--dsw-alias-brand-primary) 26%,transparent)}
+.oqc-switch[data-disabled=true]{opacity:.42;cursor:default}
+.oqc-switch[data-disabled=true] .oqc-switchInput:checked + .oqc-switchTrack{background:color-mix(in srgb,var(--oqc-switch-on,var(--dsw-alias-brand-primary)) 45%,transparent)}
 .oqc-panelHead{display:flex;align-items:center;gap:8px}
 .oqc-panelTitle{flex:1;min-width:0;font-size:12.5px;font-weight:500;color:var(--dsw-alias-label-primary)}
 .oqc-panelTitleAuto{flex:0 1 auto}
@@ -383,7 +453,7 @@ body{font-family:"Segoe UI","Microsoft YaHei UI","Microsoft YaHei",system-ui,san
 @media (prefers-reduced-motion:reduce){.oqc-sk span{animation:none}}
 .oqc-error{margin:0;font-size:11.5px;font-weight:400;line-height:1.5;color:var(--dsw-alias-label-error,#e0483a)}
 .oqc-note{margin:0;font-size:11.5px;font-weight:400;line-height:1.5;color:var(--dsw-alias-label-secondary)}
-@media (prefers-reduced-motion:reduce){.oqc-fill,.oqc-btn,.oqc-refresh,.oqc-rail,.oqc-segBtn,.oqc-block{transition:none}.oqc-refresh[data-busy=true] svg{animation:none}}</style>
+@media (prefers-reduced-motion:reduce){.oqc-fill,.oqc-btn,.oqc-refresh,.oqc-rail,.oqc-collapse,.oqc-switchTrack,.oqc-switchKnob,.oqc-segBtn,.oqc-block{transition:none}.oqc-refresh[data-busy=true] svg{animation:none}}</style>
 <style>
 .oqc-card.oqc-shim{padding:0;border:0;border-radius:0;background:none;box-shadow:none;margin:0;gap:0}
 </style>
@@ -396,7 +466,7 @@ body{font-family:"Segoe UI","Microsoft YaHei UI","Microsoft YaHei",system-ui,san
   <div class="secTitle">A · 三种账户形态，每种都保留全部五块<span>不适用的块留在原位，画成禁用态</span></div>
   <div class="row"><div class="col">
     <div class="cap">只有 Go 订阅<span>五块全亮</span></div>
-    <div class="pane"><div class="oqc-card" data-variant="sidebar" data-style="panel" data-loading="false" style="--oqc-rail-color:#3b82f6" on-drag-over="(event) =&gt; {
+    <div class="pane"><div class="oqc-card" data-variant="sidebar" data-style="panel" data-loading="false" data-manage="false" data-resizing="false" style="--oqc-rail-color:#3b82f6" on-drag-over="(event) =&gt; {
         if (!dragging) return
         event.preventDefault()
         try {
@@ -405,7 +475,7 @@ body{font-family:"Segoe UI","Microsoft YaHei UI","Microsoft YaHei",system-ui,san
           /* 忽略：只影响光标样式 */
         }
         const slot = slotAt(event)
-        if (!slot || slot.id === dragging || !sections[slot.id]) {
+        if (!slot || slot.id === dragging || !ids.includes(slot.id)) {
           if (dropAt) setDropAt(null)
           return
         }
@@ -414,10 +484,56 @@ body{font-family:"Segoe UI","Microsoft YaHei UI","Microsoft YaHei",system-ui,san
         if (!dragging) return
         event.preventDefault()
         const slot = slotAt(event)
-        if (slot &amp;&amp; slot.id !== dragging &amp;&amp; sections[slot.id]) moveTo(dragging, slot.id, slot.after)
+        if (slot &amp;&amp; slot.id !== dragging &amp;&amp; ids.includes(slot.id)) moveTo(dragging, slot.id, slot.after)
         setDragging(null)
         setDropAt(null)
-      }"><div class="oqc-head"><div class="oqc-title"><span class="oqc-titleGroup" data-tip="false"><svg class="oqc-logo" viewBox="12 17 40 33" width="17" height="14.03" role="img" aria-label="OpenCode"><defs ><linearGradient id="oqc-logo-arc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c4b5fd"/><stop offset="1" stop-color="#3b82f6"/></linearGradient><radialGradient id="oqc-logo-glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#8b5cf6" stop-opacity="0.28"/><stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/></radialGradient></defs><path d="M16 40a16 16 0 0 1 32 0" fill="none" stroke="#ede9fe" stroke-width="6" stroke-linecap="round"/><circle cx="32" cy="40" r="10" fill="url(#oqc-logo-glow)"/><path d="M16 40a16 16 0 0 1 22.6-14.8" fill="none" stroke="url(#oqc-logo-arc)" stroke-width="6" stroke-linecap="round"/><circle cx="32" cy="40" r="3.2" fill="#312e81"/><path d="M32 40 41 29" fill="none" stroke="#312e81" stroke-width="2.8" stroke-linecap="round"/></svg><span class="oqc-titleText">OpenCode</span><span class="oqc-metaText"><span class="oqc-metaLabel">更新于</span><span class="oqc-metaTime">2分钟前</span><span class="oqc-pop oqc-metaTip">每 1 分钟自动刷新</span></span></span><span class="oqc-headActions"><button type="button" class="oqc-refresh" data-busy="false" title="立即刷新" aria-label="立即刷新" on-click="() =&gt; api.refresh({ fresh: true })"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 1 1-1.6-3.7M13 3v3h-3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="oqc-refresh" title="打开设置" aria-label="打开设置" on-click="() =&gt; {}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 5h7M12.5 5H14M2 11h2.5M8 11h6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><circle cx="10.5" cy="5" r="1.7" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="5" cy="11" r="1.7" fill="none" stroke="currentColor" stroke-width="1.9"/></svg></button></span></div><button type="button" class="oqc-acctSwitch" data-busy="false" title="切换" on-click="() =&gt; setSwitchOpen(!switchOpen)">acme<span class="oqc-caret">▾</span></button></div><div class="oqc-slot" data-id="today" data-dragging="false" data-over="false"><div class="oqc-block" data-off="false"><div draggable data-grip="true" title="拖拽标题调整顺序" on-drag-start="(event) =&gt; {
+      }"><div class="oqc-resize" data-tip="上下拖动调整卡片限高" aria-label="上下拖动调整卡片限高" role="separator" on-pointer-down="(event) =&gt; {
+        if (!onCapChange) return
+        event.preventDefault()
+        try {
+          event.currentTarget.setPointerCapture(event.pointerId)
+        } catch {
+          /* 忽略：拿不到捕获也能拖 */
+        }
+        const natural = blocksRef.current ? blocksRef.current.scrollHeight : 0
+        const start = capHeight ? capPx : natural &gt; 0 ? Math.min(799, natural) : 360
+        capDrag.current = { y: event.clientY, cap: start, next: start }
+        setCapNow(start)
+      }" on-pointer-move="(event) =&gt; {
+        const state = capDrag.current
+        if (!state) return
+        const next = Math.max(200, Math.min(799, Math.round(state.cap + (state.y - event.clientY))))
+        state.next = next
+        setCapNow(next)
+      }" on-pointer-up="(event) =&gt; {
+        const state = capDrag.current
+        if (!state) return
+        capDrag.current = null
+        try {
+          event.currentTarget.releasePointerCapture(event.pointerId)
+        } catch {
+          /* 忽略 */
+        }
+        setCapNow(null)
+        /** 拖到内容自然高度就没得滚了，这时直接关掉限高，省得留一个空壳设置。 */
+        const natural = blocksRef.current ? blocksRef.current.scrollHeight : 0
+        const stillScrolls = natural &gt; 0 ? state.next &lt; natural - 2 : true
+        if (onCapChange) onCapChange({ capPx: state.next, capHeight: stillScrolls })
+      }" on-pointer-cancel="(event) =&gt; {
+        const state = capDrag.current
+        if (!state) return
+        capDrag.current = null
+        try {
+          event.currentTarget.releasePointerCapture(event.pointerId)
+        } catch {
+          /* 忽略 */
+        }
+        setCapNow(null)
+        /** 拖到内容自然高度就没得滚了，这时直接关掉限高，省得留一个空壳设置。 */
+        const natural = blocksRef.current ? blocksRef.current.scrollHeight : 0
+        const stillScrolls = natural &gt; 0 ? state.next &lt; natural - 2 : true
+        if (onCapChange) onCapChange({ capPx: state.next, capHeight: stillScrolls })
+      }"></div><div class="oqc-head"><div class="oqc-title"><span class="oqc-titleGroup" data-tip="false"><svg class="oqc-logo" viewBox="12 17 40 33" width="17" height="14.03" role="img" aria-label="OpenCode"><defs ><linearGradient id="oqc-logo-arc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c4b5fd"/><stop offset="1" stop-color="#3b82f6"/></linearGradient><radialGradient id="oqc-logo-glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#8b5cf6" stop-opacity="0.28"/><stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/></radialGradient></defs><path d="M16 40a16 16 0 0 1 32 0" fill="none" stroke="#ede9fe" stroke-width="6" stroke-linecap="round"/><circle cx="32" cy="40" r="10" fill="url(#oqc-logo-glow)"/><path d="M16 40a16 16 0 0 1 22.6-14.8" fill="none" stroke="url(#oqc-logo-arc)" stroke-width="6" stroke-linecap="round"/><circle cx="32" cy="40" r="3.2" fill="#312e81"/><path d="M32 40 41 29" fill="none" stroke="#312e81" stroke-width="2.8" stroke-linecap="round"/></svg><span class="oqc-titleText">OpenCode</span><span class="oqc-metaText"><span class="oqc-metaLabel">更新于</span><span class="oqc-metaTime">2分钟前</span><span class="oqc-pop oqc-metaTip">每 1 分钟自动刷新</span></span></span><span class="oqc-headActions"><button type="button" class="oqc-refresh" data-busy="false" title="立即刷新" aria-label="立即刷新" on-click="() =&gt; api.refresh({ fresh: true })"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 1 1-1.6-3.7M13 3v3h-3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="oqc-refresh" title="打开设置" aria-label="打开设置" on-click="() =&gt; {}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 5h7M12.5 5H14M2 11h2.5M8 11h6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><circle cx="10.5" cy="5" r="1.7" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="5" cy="11" r="1.7" fill="none" stroke="currentColor" stroke-width="1.9"/></svg></button><button type="button" class="oqc-refresh" title="收起卡片" aria-label="收起卡片" aria-expanded="true" on-click="() =&gt; prefs.set({ collapsed: true })"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 10l4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span></div><button type="button" class="oqc-acctSwitch" data-busy="false" title="切换" on-click="() =&gt; setSwitchOpen(!switchOpen)">acme<span class="oqc-caret">▾</span></button></div><div class="oqc-blocks" ref="[object Object]" data-scroll="false"><div class="oqc-slot" data-id="today" data-dragging="false" data-over="false"><div class="oqc-block" data-off="false"><div draggable data-grip="true" title="拖拽标题调整顺序" on-drag-start="(event) =&gt; {
           const target = event.target
           if (target &amp;&amp; target.closest &amp;&amp; target.closest('button,input,a')) {
             event.preventDefault()
@@ -513,10 +629,10 @@ body{font-family:"Segoe UI","Microsoft YaHei UI","Microsoft YaHei",system-ui,san
         }" on-drag-end="() =&gt; {
           setDragging(null)
           setDropAt(null)
-        }" class="oqc-blockHead"><span class="oqc-blockTick"></span><span class="oqc-blockTitle">模型</span><span class="oqc-blockRule"></span></div><div class="oqc-models"><div class="oqc-modelRow"><span class="oqc-modelName" title="claude-sonnet-4-5">claude-sonnet-4-5</span><span class="oqc-modelBar"><span class="oqc-modelFill" style="width:100%;background:#2ea043"></span></span><span class="oqc-modelCost"><span class="oqc-cur">$</span><span >1.86</span></span></div><div class="oqc-modelRow"><span class="oqc-modelName" title="gpt-5.1-codex">gpt-5.1-codex</span><span class="oqc-modelBar"><span class="oqc-modelFill" style="width:49%;background:#2ea043"></span></span><span class="oqc-modelCost"><span class="oqc-cur">$</span><span >0.92</span></span></div><div class="oqc-modelRow"><span class="oqc-modelName" title="deepseek-v4.1-flash">deepseek-v4.1-flash</span><span class="oqc-modelBar"><span class="oqc-modelFill" style="width:22%;background:#2ea043"></span></span><span class="oqc-modelCost"><span class="oqc-cur">$</span><span >0.41</span></span></div></div></div></div></div></div>
+        }" class="oqc-blockHead"><span class="oqc-blockTick"></span><span class="oqc-blockTitle">模型</span><span class="oqc-blockRule"></span></div><div class="oqc-models"><div class="oqc-modelRow"><span class="oqc-modelName" title="claude-sonnet-4-5">claude-sonnet-4-5</span><span class="oqc-modelBar"><span class="oqc-modelFill" style="width:100%;background:#2ea043"></span></span><span class="oqc-modelCost"><span class="oqc-cur">$</span><span >1.86</span></span></div><div class="oqc-modelRow"><span class="oqc-modelName" title="gpt-5.1-codex">gpt-5.1-codex</span><span class="oqc-modelBar"><span class="oqc-modelFill" style="width:49%;background:#2ea043"></span></span><span class="oqc-modelCost"><span class="oqc-cur">$</span><span >0.92</span></span></div><div class="oqc-modelRow"><span class="oqc-modelName" title="deepseek-v4.1-flash">deepseek-v4.1-flash</span><span class="oqc-modelBar"><span class="oqc-modelFill" style="width:22%;background:#2ea043"></span></span><span class="oqc-modelCost"><span class="oqc-cur">$</span><span >0.41</span></span></div></div></div></div></div></div></div>
   </div><div class="col">
     <div class="cap">只有按量计费<span>没有额度窗口</span></div>
-    <div class="pane"><div class="oqc-card" data-variant="sidebar" data-style="panel" data-loading="false" style="--oqc-rail-color:#3b82f6" on-drag-over="(event) =&gt; {
+    <div class="pane"><div class="oqc-card" data-variant="sidebar" data-style="panel" data-loading="false" data-manage="false" data-resizing="false" style="--oqc-rail-color:#3b82f6" on-drag-over="(event) =&gt; {
         if (!dragging) return
         event.preventDefault()
         try {
@@ -525,7 +641,7 @@ body{font-family:"Segoe UI","Microsoft YaHei UI","Microsoft YaHei",system-ui,san
           /* 忽略：只影响光标样式 */
         }
         const slot = slotAt(event)
-        if (!slot || slot.id === dragging || !sections[slot.id]) {
+        if (!slot || slot.id === dragging || !ids.includes(slot.id)) {
           if (dropAt) setDropAt(null)
           return
         }
@@ -534,10 +650,56 @@ body{font-family:"Segoe UI","Microsoft YaHei UI","Microsoft YaHei",system-ui,san
         if (!dragging) return
         event.preventDefault()
         const slot = slotAt(event)
-        if (slot &amp;&amp; slot.id !== dragging &amp;&amp; sections[slot.id]) moveTo(dragging, slot.id, slot.after)
+        if (slot &amp;&amp; slot.id !== dragging &amp;&amp; ids.includes(slot.id)) moveTo(dragging, slot.id, slot.after)
         setDragging(null)
         setDropAt(null)
-      }"><div class="oqc-head"><div class="oqc-title"><span class="oqc-titleGroup" data-tip="false"><svg class="oqc-logo" viewBox="12 17 40 33" width="17" height="14.03" role="img" aria-label="OpenCode"><defs ><linearGradient id="oqc-logo-arc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c4b5fd"/><stop offset="1" stop-color="#3b82f6"/></linearGradient><radialGradient id="oqc-logo-glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#8b5cf6" stop-opacity="0.28"/><stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/></radialGradient></defs><path d="M16 40a16 16 0 0 1 32 0" fill="none" stroke="#ede9fe" stroke-width="6" stroke-linecap="round"/><circle cx="32" cy="40" r="10" fill="url(#oqc-logo-glow)"/><path d="M16 40a16 16 0 0 1 22.6-14.8" fill="none" stroke="url(#oqc-logo-arc)" stroke-width="6" stroke-linecap="round"/><circle cx="32" cy="40" r="3.2" fill="#312e81"/><path d="M32 40 41 29" fill="none" stroke="#312e81" stroke-width="2.8" stroke-linecap="round"/></svg><span class="oqc-titleText">OpenCode</span><span class="oqc-metaText"><span class="oqc-metaLabel">更新于</span><span class="oqc-metaTime">2分钟前</span><span class="oqc-pop oqc-metaTip">每 1 分钟自动刷新</span></span></span><span class="oqc-headActions"><button type="button" class="oqc-refresh" data-busy="false" title="立即刷新" aria-label="立即刷新" on-click="() =&gt; api.refresh({ fresh: true })"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 1 1-1.6-3.7M13 3v3h-3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="oqc-refresh" title="打开设置" aria-label="打开设置" on-click="() =&gt; {}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 5h7M12.5 5H14M2 11h2.5M8 11h6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><circle cx="10.5" cy="5" r="1.7" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="5" cy="11" r="1.7" fill="none" stroke="currentColor" stroke-width="1.9"/></svg></button></span></div><button type="button" class="oqc-acctSwitch" data-busy="false" title="切换" on-click="() =&gt; setSwitchOpen(!switchOpen)">acme<span class="oqc-caret">▾</span></button></div><div class="oqc-slot" data-id="today" data-dragging="false" data-over="false"><div class="oqc-block" data-off="false"><div draggable data-grip="true" title="拖拽标题调整顺序" on-drag-start="(event) =&gt; {
+      }"><div class="oqc-resize" data-tip="上下拖动调整卡片限高" aria-label="上下拖动调整卡片限高" role="separator" on-pointer-down="(event) =&gt; {
+        if (!onCapChange) return
+        event.preventDefault()
+        try {
+          event.currentTarget.setPointerCapture(event.pointerId)
+        } catch {
+          /* 忽略：拿不到捕获也能拖 */
+        }
+        const natural = blocksRef.current ? blocksRef.current.scrollHeight : 0
+        const start = capHeight ? capPx : natural &gt; 0 ? Math.min(799, natural) : 360
+        capDrag.current = { y: event.clientY, cap: start, next: start }
+        setCapNow(start)
+      }" on-pointer-move="(event) =&gt; {
+        const state = capDrag.current
+        if (!state) return
+        const next = Math.max(200, Math.min(799, Math.round(state.cap + (state.y - event.clientY))))
+        state.next = next
+        setCapNow(next)
+      }" on-pointer-up="(event) =&gt; {
+        const state = capDrag.current
+        if (!state) return
+        capDrag.current = null
+        try {
+          event.currentTarget.releasePointerCapture(event.pointerId)
+        } catch {
+          /* 忽略 */
+        }
+        setCapNow(null)
+        /** 拖到内容自然高度就没得滚了，这时直接关掉限高，省得留一个空壳设置。 */
+        const natural = blocksRef.current ? blocksRef.current.scrollHeight : 0
+        const stillScrolls = natural &gt; 0 ? state.next &lt; natural - 2 : true
+        if (onCapChange) onCapChange({ capPx: state.next, capHeight: stillScrolls })
+      }" on-pointer-cancel="(event) =&gt; {
+        const state = capDrag.current
+        if (!state) return
+        capDrag.current = null
+        try {
+          event.currentTarget.releasePointerCapture(event.pointerId)
+        } catch {
+          /* 忽略 */
+        }
+        setCapNow(null)
+        /** 拖到内容自然高度就没得滚了，这时直接关掉限高，省得留一个空壳设置。 */
+        const natural = blocksRef.current ? blocksRef.current.scrollHeight : 0
+        const stillScrolls = natural &gt; 0 ? state.next &lt; natural - 2 : true
+        if (onCapChange) onCapChange({ capPx: state.next, capHeight: stillScrolls })
+      }"></div><div class="oqc-head"><div class="oqc-title"><span class="oqc-titleGroup" data-tip="false"><svg class="oqc-logo" viewBox="12 17 40 33" width="17" height="14.03" role="img" aria-label="OpenCode"><defs ><linearGradient id="oqc-logo-arc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c4b5fd"/><stop offset="1" stop-color="#3b82f6"/></linearGradient><radialGradient id="oqc-logo-glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#8b5cf6" stop-opacity="0.28"/><stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/></radialGradient></defs><path d="M16 40a16 16 0 0 1 32 0" fill="none" stroke="#ede9fe" stroke-width="6" stroke-linecap="round"/><circle cx="32" cy="40" r="10" fill="url(#oqc-logo-glow)"/><path d="M16 40a16 16 0 0 1 22.6-14.8" fill="none" stroke="url(#oqc-logo-arc)" stroke-width="6" stroke-linecap="round"/><circle cx="32" cy="40" r="3.2" fill="#312e81"/><path d="M32 40 41 29" fill="none" stroke="#312e81" stroke-width="2.8" stroke-linecap="round"/></svg><span class="oqc-titleText">OpenCode</span><span class="oqc-metaText"><span class="oqc-metaLabel">更新于</span><span class="oqc-metaTime">2分钟前</span><span class="oqc-pop oqc-metaTip">每 1 分钟自动刷新</span></span></span><span class="oqc-headActions"><button type="button" class="oqc-refresh" data-busy="false" title="立即刷新" aria-label="立即刷新" on-click="() =&gt; api.refresh({ fresh: true })"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 1 1-1.6-3.7M13 3v3h-3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="oqc-refresh" title="打开设置" aria-label="打开设置" on-click="() =&gt; {}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 5h7M12.5 5H14M2 11h2.5M8 11h6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><circle cx="10.5" cy="5" r="1.7" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="5" cy="11" r="1.7" fill="none" stroke="currentColor" stroke-width="1.9"/></svg></button><button type="button" class="oqc-refresh" title="收起卡片" aria-label="收起卡片" aria-expanded="true" on-click="() =&gt; prefs.set({ collapsed: true })"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 10l4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span></div><button type="button" class="oqc-acctSwitch" data-busy="false" title="切换" on-click="() =&gt; setSwitchOpen(!switchOpen)">acme<span class="oqc-caret">▾</span></button></div><div class="oqc-blocks" ref="[object Object]" data-scroll="false"><div class="oqc-slot" data-id="today" data-dragging="false" data-over="false"><div class="oqc-block" data-off="false"><div draggable data-grip="true" title="拖拽标题调整顺序" on-drag-start="(event) =&gt; {
           const target = event.target
           if (target &amp;&amp; target.closest &amp;&amp; target.closest('button,input,a')) {
             event.preventDefault()
@@ -597,10 +759,10 @@ body{font-family:"Segoe UI","Microsoft YaHei UI","Microsoft YaHei",system-ui,san
         }" on-drag-end="() =&gt; {
           setDragging(null)
           setDropAt(null)
-        }" class="oqc-blockHead"><span class="oqc-blockTick"></span><span class="oqc-blockTitle">模型</span><span class="oqc-blockRule"></span></div><div class="oqc-models"><div class="oqc-modelRow"><span class="oqc-modelName" title="claude-sonnet-4-5">claude-sonnet-4-5</span><span class="oqc-modelBar"><span class="oqc-modelFill" style="width:100%;background:#2ea043"></span></span><span class="oqc-modelCost"><span class="oqc-cur">$</span><span >1.86</span></span></div><div class="oqc-modelRow"><span class="oqc-modelName" title="gpt-5.1-codex">gpt-5.1-codex</span><span class="oqc-modelBar"><span class="oqc-modelFill" style="width:49%;background:#2ea043"></span></span><span class="oqc-modelCost"><span class="oqc-cur">$</span><span >0.92</span></span></div><div class="oqc-modelRow"><span class="oqc-modelName" title="deepseek-v4.1-flash">deepseek-v4.1-flash</span><span class="oqc-modelBar"><span class="oqc-modelFill" style="width:22%;background:#2ea043"></span></span><span class="oqc-modelCost"><span class="oqc-cur">$</span><span >0.41</span></span></div></div></div></div></div></div>
+        }" class="oqc-blockHead"><span class="oqc-blockTick"></span><span class="oqc-blockTitle">模型</span><span class="oqc-blockRule"></span></div><div class="oqc-models"><div class="oqc-modelRow"><span class="oqc-modelName" title="claude-sonnet-4-5">claude-sonnet-4-5</span><span class="oqc-modelBar"><span class="oqc-modelFill" style="width:100%;background:#2ea043"></span></span><span class="oqc-modelCost"><span class="oqc-cur">$</span><span >1.86</span></span></div><div class="oqc-modelRow"><span class="oqc-modelName" title="gpt-5.1-codex">gpt-5.1-codex</span><span class="oqc-modelBar"><span class="oqc-modelFill" style="width:49%;background:#2ea043"></span></span><span class="oqc-modelCost"><span class="oqc-cur">$</span><span >0.92</span></span></div><div class="oqc-modelRow"><span class="oqc-modelName" title="deepseek-v4.1-flash">deepseek-v4.1-flash</span><span class="oqc-modelBar"><span class="oqc-modelFill" style="width:22%;background:#2ea043"></span></span><span class="oqc-modelCost"><span class="oqc-cur">$</span><span >0.41</span></span></div></div></div></div></div></div></div>
   </div><div class="col">
     <div class="cap">Go + 按量都有<span>与「只有 Go」同渲染</span></div>
-    <div class="pane"><div class="oqc-card" data-variant="sidebar" data-style="panel" data-loading="false" style="--oqc-rail-color:#3b82f6" on-drag-over="(event) =&gt; {
+    <div class="pane"><div class="oqc-card" data-variant="sidebar" data-style="panel" data-loading="false" data-manage="false" data-resizing="false" style="--oqc-rail-color:#3b82f6" on-drag-over="(event) =&gt; {
         if (!dragging) return
         event.preventDefault()
         try {
@@ -609,7 +771,7 @@ body{font-family:"Segoe UI","Microsoft YaHei UI","Microsoft YaHei",system-ui,san
           /* 忽略：只影响光标样式 */
         }
         const slot = slotAt(event)
-        if (!slot || slot.id === dragging || !sections[slot.id]) {
+        if (!slot || slot.id === dragging || !ids.includes(slot.id)) {
           if (dropAt) setDropAt(null)
           return
         }
@@ -618,10 +780,56 @@ body{font-family:"Segoe UI","Microsoft YaHei UI","Microsoft YaHei",system-ui,san
         if (!dragging) return
         event.preventDefault()
         const slot = slotAt(event)
-        if (slot &amp;&amp; slot.id !== dragging &amp;&amp; sections[slot.id]) moveTo(dragging, slot.id, slot.after)
+        if (slot &amp;&amp; slot.id !== dragging &amp;&amp; ids.includes(slot.id)) moveTo(dragging, slot.id, slot.after)
         setDragging(null)
         setDropAt(null)
-      }"><div class="oqc-head"><div class="oqc-title"><span class="oqc-titleGroup" data-tip="false"><svg class="oqc-logo" viewBox="12 17 40 33" width="17" height="14.03" role="img" aria-label="OpenCode"><defs ><linearGradient id="oqc-logo-arc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c4b5fd"/><stop offset="1" stop-color="#3b82f6"/></linearGradient><radialGradient id="oqc-logo-glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#8b5cf6" stop-opacity="0.28"/><stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/></radialGradient></defs><path d="M16 40a16 16 0 0 1 32 0" fill="none" stroke="#ede9fe" stroke-width="6" stroke-linecap="round"/><circle cx="32" cy="40" r="10" fill="url(#oqc-logo-glow)"/><path d="M16 40a16 16 0 0 1 22.6-14.8" fill="none" stroke="url(#oqc-logo-arc)" stroke-width="6" stroke-linecap="round"/><circle cx="32" cy="40" r="3.2" fill="#312e81"/><path d="M32 40 41 29" fill="none" stroke="#312e81" stroke-width="2.8" stroke-linecap="round"/></svg><span class="oqc-titleText">OpenCode</span><span class="oqc-metaText"><span class="oqc-metaLabel">更新于</span><span class="oqc-metaTime">2分钟前</span><span class="oqc-pop oqc-metaTip">每 1 分钟自动刷新</span></span></span><span class="oqc-headActions"><button type="button" class="oqc-refresh" data-busy="false" title="立即刷新" aria-label="立即刷新" on-click="() =&gt; api.refresh({ fresh: true })"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 1 1-1.6-3.7M13 3v3h-3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="oqc-refresh" title="打开设置" aria-label="打开设置" on-click="() =&gt; {}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 5h7M12.5 5H14M2 11h2.5M8 11h6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><circle cx="10.5" cy="5" r="1.7" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="5" cy="11" r="1.7" fill="none" stroke="currentColor" stroke-width="1.9"/></svg></button></span></div><button type="button" class="oqc-acctSwitch" data-busy="false" title="切换" on-click="() =&gt; setSwitchOpen(!switchOpen)">acme<span class="oqc-caret">▾</span></button></div><div class="oqc-slot" data-id="today" data-dragging="false" data-over="false"><div class="oqc-block" data-off="false"><div draggable data-grip="true" title="拖拽标题调整顺序" on-drag-start="(event) =&gt; {
+      }"><div class="oqc-resize" data-tip="上下拖动调整卡片限高" aria-label="上下拖动调整卡片限高" role="separator" on-pointer-down="(event) =&gt; {
+        if (!onCapChange) return
+        event.preventDefault()
+        try {
+          event.currentTarget.setPointerCapture(event.pointerId)
+        } catch {
+          /* 忽略：拿不到捕获也能拖 */
+        }
+        const natural = blocksRef.current ? blocksRef.current.scrollHeight : 0
+        const start = capHeight ? capPx : natural &gt; 0 ? Math.min(799, natural) : 360
+        capDrag.current = { y: event.clientY, cap: start, next: start }
+        setCapNow(start)
+      }" on-pointer-move="(event) =&gt; {
+        const state = capDrag.current
+        if (!state) return
+        const next = Math.max(200, Math.min(799, Math.round(state.cap + (state.y - event.clientY))))
+        state.next = next
+        setCapNow(next)
+      }" on-pointer-up="(event) =&gt; {
+        const state = capDrag.current
+        if (!state) return
+        capDrag.current = null
+        try {
+          event.currentTarget.releasePointerCapture(event.pointerId)
+        } catch {
+          /* 忽略 */
+        }
+        setCapNow(null)
+        /** 拖到内容自然高度就没得滚了，这时直接关掉限高，省得留一个空壳设置。 */
+        const natural = blocksRef.current ? blocksRef.current.scrollHeight : 0
+        const stillScrolls = natural &gt; 0 ? state.next &lt; natural - 2 : true
+        if (onCapChange) onCapChange({ capPx: state.next, capHeight: stillScrolls })
+      }" on-pointer-cancel="(event) =&gt; {
+        const state = capDrag.current
+        if (!state) return
+        capDrag.current = null
+        try {
+          event.currentTarget.releasePointerCapture(event.pointerId)
+        } catch {
+          /* 忽略 */
+        }
+        setCapNow(null)
+        /** 拖到内容自然高度就没得滚了，这时直接关掉限高，省得留一个空壳设置。 */
+        const natural = blocksRef.current ? blocksRef.current.scrollHeight : 0
+        const stillScrolls = natural &gt; 0 ? state.next &lt; natural - 2 : true
+        if (onCapChange) onCapChange({ capPx: state.next, capHeight: stillScrolls })
+      }"></div><div class="oqc-head"><div class="oqc-title"><span class="oqc-titleGroup" data-tip="false"><svg class="oqc-logo" viewBox="12 17 40 33" width="17" height="14.03" role="img" aria-label="OpenCode"><defs ><linearGradient id="oqc-logo-arc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c4b5fd"/><stop offset="1" stop-color="#3b82f6"/></linearGradient><radialGradient id="oqc-logo-glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#8b5cf6" stop-opacity="0.28"/><stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/></radialGradient></defs><path d="M16 40a16 16 0 0 1 32 0" fill="none" stroke="#ede9fe" stroke-width="6" stroke-linecap="round"/><circle cx="32" cy="40" r="10" fill="url(#oqc-logo-glow)"/><path d="M16 40a16 16 0 0 1 22.6-14.8" fill="none" stroke="url(#oqc-logo-arc)" stroke-width="6" stroke-linecap="round"/><circle cx="32" cy="40" r="3.2" fill="#312e81"/><path d="M32 40 41 29" fill="none" stroke="#312e81" stroke-width="2.8" stroke-linecap="round"/></svg><span class="oqc-titleText">OpenCode</span><span class="oqc-metaText"><span class="oqc-metaLabel">更新于</span><span class="oqc-metaTime">2分钟前</span><span class="oqc-pop oqc-metaTip">每 1 分钟自动刷新</span></span></span><span class="oqc-headActions"><button type="button" class="oqc-refresh" data-busy="false" title="立即刷新" aria-label="立即刷新" on-click="() =&gt; api.refresh({ fresh: true })"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 1 1-1.6-3.7M13 3v3h-3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="oqc-refresh" title="打开设置" aria-label="打开设置" on-click="() =&gt; {}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 5h7M12.5 5H14M2 11h2.5M8 11h6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><circle cx="10.5" cy="5" r="1.7" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="5" cy="11" r="1.7" fill="none" stroke="currentColor" stroke-width="1.9"/></svg></button><button type="button" class="oqc-refresh" title="收起卡片" aria-label="收起卡片" aria-expanded="true" on-click="() =&gt; prefs.set({ collapsed: true })"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 10l4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span></div><button type="button" class="oqc-acctSwitch" data-busy="false" title="切换" on-click="() =&gt; setSwitchOpen(!switchOpen)">acme<span class="oqc-caret">▾</span></button></div><div class="oqc-blocks" ref="[object Object]" data-scroll="false"><div class="oqc-slot" data-id="today" data-dragging="false" data-over="false"><div class="oqc-block" data-off="false"><div draggable data-grip="true" title="拖拽标题调整顺序" on-drag-start="(event) =&gt; {
           const target = event.target
           if (target &amp;&amp; target.closest &amp;&amp; target.closest('button,input,a')) {
             event.preventDefault()
@@ -717,7 +925,7 @@ body{font-family:"Segoe UI","Microsoft YaHei UI","Microsoft YaHei",system-ui,san
         }" on-drag-end="() =&gt; {
           setDragging(null)
           setDropAt(null)
-        }" class="oqc-blockHead"><span class="oqc-blockTick"></span><span class="oqc-blockTitle">模型</span><span class="oqc-blockRule"></span></div><div class="oqc-models"><div class="oqc-modelRow"><span class="oqc-modelName" title="claude-sonnet-4-5">claude-sonnet-4-5</span><span class="oqc-modelBar"><span class="oqc-modelFill" style="width:100%;background:#2ea043"></span></span><span class="oqc-modelCost"><span class="oqc-cur">$</span><span >1.86</span></span></div><div class="oqc-modelRow"><span class="oqc-modelName" title="gpt-5.1-codex">gpt-5.1-codex</span><span class="oqc-modelBar"><span class="oqc-modelFill" style="width:49%;background:#2ea043"></span></span><span class="oqc-modelCost"><span class="oqc-cur">$</span><span >0.92</span></span></div><div class="oqc-modelRow"><span class="oqc-modelName" title="deepseek-v4.1-flash">deepseek-v4.1-flash</span><span class="oqc-modelBar"><span class="oqc-modelFill" style="width:22%;background:#2ea043"></span></span><span class="oqc-modelCost"><span class="oqc-cur">$</span><span >0.41</span></span></div></div></div></div></div></div>
+        }" class="oqc-blockHead"><span class="oqc-blockTick"></span><span class="oqc-blockTitle">模型</span><span class="oqc-blockRule"></span></div><div class="oqc-models"><div class="oqc-modelRow"><span class="oqc-modelName" title="claude-sonnet-4-5">claude-sonnet-4-5</span><span class="oqc-modelBar"><span class="oqc-modelFill" style="width:100%;background:#2ea043"></span></span><span class="oqc-modelCost"><span class="oqc-cur">$</span><span >1.86</span></span></div><div class="oqc-modelRow"><span class="oqc-modelName" title="gpt-5.1-codex">gpt-5.1-codex</span><span class="oqc-modelBar"><span class="oqc-modelFill" style="width:49%;background:#2ea043"></span></span><span class="oqc-modelCost"><span class="oqc-cur">$</span><span >0.92</span></span></div><div class="oqc-modelRow"><span class="oqc-modelName" title="deepseek-v4.1-flash">deepseek-v4.1-flash</span><span class="oqc-modelBar"><span class="oqc-modelFill" style="width:22%;background:#2ea043"></span></span><span class="oqc-modelCost"><span class="oqc-cur">$</span><span >0.41</span></span></div></div></div></div></div></div></div>
   </div></div>
 </div>
 <div class="sec">

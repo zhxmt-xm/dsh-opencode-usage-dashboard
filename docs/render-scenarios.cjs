@@ -484,6 +484,25 @@ for (const id of ORDER) {
   writeShot(`card-${id}`, `<div class="oqc-card" data-style="rail" style="--oqc-rail-color:#3b82f6">${block}</div>`, 300)
 }
 writeShot('card-hero', renderCard(VIEW_GO), 300)
+/** 默认集合、简化版、收起、限高：四种卡片形态各来一张，方便核对。 */
+injected.prefs.set({ hidden: ['forecast', 'trend', 'models'], todayCompact: false, collapsed: false })
+writeShot('card-default', renderCard(VIEW_GO), 300)
+injected.prefs.set({ hidden: ['forecast', 'trend', 'models'], todayCompact: true })
+writeShot('card-compact', renderCard(VIEW_GO), 300)
+injected.prefs.set({ hidden: [], todayCompact: false, collapsed: true })
+writeShot('card-collapsed', renderCard(VIEW_GO), 300)
+injected.prefs.set({ hidden: [], collapsed: false, capHeight: true, capPx: 240 })
+writeShot('card-capped', renderCard(VIEW_GO), 300)
+/** 首屏 / 没有用量数据：summary 是 null，卡片不能炸。 */
+injected.prefs.set({ hidden: [], capHeight: false, capPx: 360, todayCompact: false })
+writeShot('card-no-usage', renderCard(VIEW_NO_USAGE), 300)
+injected.prefs.set({ hidden: [], todayCompact: true })
+writeShot('card-no-usage-compact', renderCard(VIEW_NO_USAGE), 300)
+injected.prefs.set({ hidden: [], todayCompact: false })
+/** 24 小时轴的标签密度单独来一张，窄卡片下核对是否重合。 */
+injected.prefs.set({ trendRange: '24h' })
+writeShot('card-trend-24h', renderCard(VIEW_GO), 300)
+injected.prefs.set({ trendRange: '7d' })
 const panels = divsWithClass(settingsPage, 'oqc-panel')
 if (panels.length !== 3) throw new Error(`expected 3 settings panels, got ${panels.length}`)
 const PANEL_SHOTS = ['settings-account', 'settings-display', 'settings-preview']
