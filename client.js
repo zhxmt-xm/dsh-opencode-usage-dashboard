@@ -2906,7 +2906,15 @@ ${FONT_FACES}
                     'svg',
                     { viewBox: '0 0 16 16', 'aria-hidden': true },
                     h('path', {
-                      d: 'M4 10l4-4 4 4',
+                      d: 'M3.4 8.2 8 3.6l4.6 4.6',
+                      fill: 'none',
+                      stroke: 'currentColor',
+                      'stroke-width': '1.9',
+                      'stroke-linecap': 'round',
+                      'stroke-linejoin': 'round',
+                    }),
+                    h('path', {
+                      d: 'M3.4 13 8 8.4l4.6 4.6',
                       fill: 'none',
                       stroke: 'currentColor',
                       'stroke-width': '1.9',
