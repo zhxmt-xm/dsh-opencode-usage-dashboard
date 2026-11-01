@@ -563,11 +563,6 @@ ${FONT_FACES}
 .oqc-optRow{display:flex;align-items:center;gap:6px;min-width:0}
 .oqc-manageRowTitle{flex:none;font-size:13.5px;font-weight:600;line-height:1.3;letter-spacing:.01em;color:var(--dsw-alias-label-secondary)}
 .oqc-blockTip{position:relative;display:inline-flex;align-items:center}
-/* 「?」的气泡和悬停提示共用 .oqc-pop 的观感，这里只补宽度与分段；出现是即时的。 */
-.oqc-tipPopRow{top:22px;left:0;width:240px;max-width:240px;white-space:normal;pointer-events:none}
-.oqc-tipLine{display:block}
-.oqc-tipLine + .oqc-tipLine{margin-top:3px}
-.oqc-tipPopWide{top:22px;left:auto;right:auto;max-width:240px;white-space:normal;pointer-events:none}
 .oqc-manageBody{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:26px;align-items:start}
 .oqc-manageCfg{display:flex;flex-direction:column;gap:9px;min-width:0}
 .oqc-manageView{min-width:0}
@@ -576,9 +571,11 @@ ${FONT_FACES}
 /* 统一悬停提示：data-hint 顶掉原生 title，统一延迟 0.2s 淡入；问号按钮的提示是即时的，不走这条。
    data-side 手动指定气泡朝哪边长：start 左对齐、end 右对齐、默认居中，避免贴边被裁。 */
 .oqc-htip{position:relative}
-.oqc-htip::before{content:attr(data-hint);position:absolute;left:50%;top:calc(100% + 5px);z-index:20;transform:translateX(-50%);padding:4px 8px;border-radius:6px;border:.5px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-1,#fff);box-shadow:0 6px 16px -6px rgba(0,0,0,.4);font-size:10.5px;line-height:1.4;font-weight:400;letter-spacing:0;text-transform:none;white-space:nowrap;color:var(--dsw-alias-label-secondary);opacity:0;pointer-events:none;transition:opacity 140ms ease}
+.oqc-htip::before{content:attr(data-hint);position:absolute;left:50%;top:calc(100% + 5px);z-index:20;transform:translateX(-50%);padding:4px 8px;border-radius:6px;border:.5px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-1,#fff);box-shadow:0 6px 16px -6px rgba(0,0,0,.4);font-size:10.5px;line-height:1.4;font-weight:400;letter-spacing:0;text-transform:none;text-align:left;white-space:nowrap;color:var(--dsw-alias-label-secondary);opacity:0;pointer-events:none;transition:opacity 140ms ease}
 .oqc-htip[data-side=start]::before{left:0;transform:none}
 .oqc-htip[data-side=end]::before{left:auto;right:0;transform:none}
+/* 长说明（问号按钮）允许换行，宽度固定，避免撑破面板。 */
+.oqc-htip[data-wrap=true]::before{white-space:normal;width:240px;max-width:240px;padding:6px 9px;line-height:1.45}
 .oqc-htip:hover::before{opacity:1;transition-delay:.2s}
 /* 顶部拖拽条本身是绝对定位，别被 .oqc-htip 的 relative 覆盖。 */
 .oqc-card .oqc-resize{position:absolute}
@@ -695,10 +692,9 @@ ${FONT_FACES}
 .oqc-acctMeta{display:flex;align-items:baseline;min-width:0;margin:-2px 0 2px;white-space:nowrap;overflow:hidden}
 .oqc-acctId{display:block;flex:0 1 auto;min-width:0;font-family:ui-monospace,"SF Mono",Consolas,monospace;font-size:9.5px;line-height:1.4;letter-spacing:.01em;color:var(--dsw-alias-label-tertiary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .oqc-acctCount{flex:none;font-family:inherit;font-size:9.5px;line-height:1.4;letter-spacing:0;color:var(--dsw-alias-label-tertiary);white-space:nowrap}
-.oqc-tipBtn{flex:0 0 14px;display:inline-flex;align-items:center;justify-content:center;align-self:center;box-sizing:border-box !important;width:14px !important;height:14px !important;min-width:14px !important;max-width:14px !important;min-height:14px !important;max-height:14px !important;aspect-ratio:1;padding:0 !important;border:1px solid var(--dsw-alias-border-l4);border-radius:50% !important;corner-shape:round !important;background:transparent;color:var(--dsw-alias-label-tertiary);font-family:inherit;font-size:9.5px;font-weight:500;line-height:1;cursor:help;appearance:none;-webkit-appearance:none;transform:translateY(0.5px);overflow:hidden;transition:background 140ms ease,color 140ms ease,border-color 140ms ease}
+.oqc-tipBtn{flex:0 0 14px;display:inline-flex;align-items:center;justify-content:center;align-self:center;box-sizing:border-box !important;width:14px !important;height:14px !important;min-width:14px !important;max-width:14px !important;min-height:14px !important;max-height:14px !important;aspect-ratio:1;padding:0 !important;border:1px solid var(--dsw-alias-border-l4);border-radius:50% !important;corner-shape:round !important;background:transparent;color:var(--dsw-alias-label-tertiary);font-family:inherit;font-size:9.5px;font-weight:500;line-height:1;cursor:default;appearance:none;-webkit-appearance:none;transform:translateY(0.5px);overflow:visible;transition:background 140ms ease,color 140ms ease,border-color 140ms ease}
 .oqc-tipBtn:hover,.oqc-tipBtn:focus-visible{color:var(--dsw-alias-label-primary);border-color:var(--dsw-alias-label-tertiary);background:color-mix(in srgb,var(--dsw-alias-label-primary) 6%,transparent)}
 .oqc-tipBtn:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--dsw-alias-brand-primary) 26%,transparent)}
-.oqc-tipPop{position:absolute;z-index:9;top:22px;left:0;max-width:250px;white-space:normal}
 .oqc-keyRow[data-editing=true]{border-color:color-mix(in srgb,var(--dsw-alias-brand-primary) 40%,transparent);background:color-mix(in srgb,var(--dsw-alias-brand-primary) 6%,transparent)}
 .oqc-keyBtn{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;flex:none;height:22px;padding:0 8px;border:.5px solid var(--dsw-alias-border-l4);border-radius:6px;background:transparent;color:var(--dsw-alias-label-secondary);font:inherit;font-size:11px;line-height:1;white-space:nowrap;cursor:pointer;transition:background 140ms ease,color 140ms ease}
 .oqc-keyBtn:hover:not(:disabled){background:color-mix(in srgb,var(--dsw-alias-label-primary) 6%,transparent);color:var(--dsw-alias-label-primary)}
@@ -1604,41 +1600,24 @@ ${FONT_FACES}
     }
 
     /**
-     * 标题后面的感叹号：悬停或聚焦时弹出说明。
+     * 标题后面的问号：和其它图标共用 .oqc-htip 的悬停气泡（0.2s 延迟、同样的观感）。
+     * 文案较长，用 data-wrap 让它换行。
      * @param {{ text: string, label?: string }} props 组件参数。
      * @returns {any} React 元素。
      */
     function BlockTip({ text, label }) {
-      const [open, setOpen] = React.useState(false)
       if (!text) return null
-      /** 按句号 / 分号断行，说明再长也不会挤成一坨。 */
-      const lines = String(text)
-        .split(/(?<=[。；])/u)
-        .map((line) => line.trim())
-        .filter(Boolean)
       return h(
-        'span',
-        { className: 'oqc-blockTip' },
-        h(
-          'button',
-          {
-            type: 'button',
-            className: 'oqc-tipBtn',
-            'aria-label': label || text,
-            onMouseEnter: () => setOpen(true),
-            onMouseLeave: () => setOpen(false),
-            onFocus: () => setOpen(true),
-            onBlur: () => setOpen(false),
-          },
-          '?',
-        ),
-        open
-          ? h(
-              'span',
-              { className: 'oqc-pop oqc-tipPop oqc-tipPopRow', role: 'tooltip' },
-              lines.map((line, index) => h('span', { key: index, className: 'oqc-tipLine' }, line)),
-            )
-          : null,
+        'button',
+        {
+          type: 'button',
+          className: 'oqc-tipBtn oqc-htip',
+          'data-hint': String(text),
+          'data-side': 'start',
+          'data-wrap': 'true',
+          'aria-label': label || String(text),
+        },
+        '?',
       )
     }
 
@@ -2248,7 +2227,6 @@ ${FONT_FACES}
       const setMetric = (next) => onTrendMetric && onTrendMetric(next)
       const [dragging, setDragging] = React.useState(null)
       const [dropAt, setDropAt] = React.useState(null)
-      const [tipOpen, setTipOpen] = React.useState(false)
       const [switchOpen, setSwitchOpen] = React.useState(false)
       /** 账户菜单点别处 / 按 Esc 收起；提示气泡跟随 hover / focus，不用全局监听。 */
       React.useEffect(() => {
@@ -2653,10 +2631,9 @@ ${FONT_FACES}
         observer.observe(node)
         return () => observer.disconnect()
       }, [capHeight, capPx])
-      /** 限高只有在「真的会滚」时才生效，等于或超过自然高度就当作没开。 */
-      const cappedPx = capNow !== null ? capNow : capHeight && (naturalPx === 0 || capPx < naturalPx - 1) ? capPx : null
-      const activeCap = cappedPx
-      const capCeiling = naturalPx > 0 ? naturalPx : 1200
+      /** 限高按偏好直接生效；拖动上限是「内容自然高度 - 1px」，永远留 1px 可滚。 */
+      const activeCap = capNow !== null ? capNow : capHeight ? capPx : null
+      const capCeiling = naturalPx > 0 ? Math.max(120, naturalPx - 1) : 1200
       const startCapDrag = (event) => {
         if (!onCapChange) return
         event.preventDefault()
@@ -2665,16 +2642,18 @@ ${FONT_FACES}
         } catch {
           /* 忽略：拿不到捕获也能拖 */
         }
-        const natural = blocksRef.current ? blocksRef.current.scrollHeight : 0
-        const start = capHeight ? capPx : natural > 0 ? natural : 360
-        capDrag.current = { y: event.clientY, cap: start, next: start }
-        setCapNow(start)
+        /** 没开限高时从上限开始拖：往下拖就是开启。 */
+        const start = capHeight && capPx < capCeiling ? capPx : capCeiling
+        /** 先只记起点，真的要拖动了才显示拖拽条。 */
+        capDrag.current = { y: event.clientY, cap: start, next: start, moved: false }
       }
       const moveCapDrag = (event) => {
         const state = capDrag.current
         if (!state) return
-        const ceiling = capCeiling
-        const next = Math.max(120, Math.min(ceiling, Math.round(state.cap + (state.y - event.clientY))))
+        const dy = state.y - event.clientY
+        if (!state.moved && Math.abs(dy) < 2) return
+        state.moved = true
+        const next = Math.max(120, Math.min(capCeiling, Math.round(state.cap + dy)))
         state.next = next
         setCapNow(next)
       }
@@ -2688,16 +2667,12 @@ ${FONT_FACES}
           /* 忽略 */
         }
         setCapNow(null)
-        /** 拖到内容自然高度就没得滚了，这时直接关掉限高，省得留一个空壳设置。 */
-        const natural = blocksRef.current ? blocksRef.current.scrollHeight : 0
-        const stillScrolls = natural > 0 ? state.next < natural - 1 : true
-        if (onCapChange) onCapChange({ capPx: state.next, capHeight: stillScrolls })
+        /** 只是点了一下没拖：什么都不写。 */
+        if (!state.moved) return
+        /** 拖到上限（内容高度 - 1px）说明已经不需要滚动了：这一次关掉限高，值仍记在上限。 */
+        const atCeiling = state.next >= capCeiling
+        if (onCapChange) onCapChange({ capPx: state.next, capHeight: !atCeiling })
       }
-      /** 存量设置可能大于当前内容高度：发现了就顺手关掉，别让开关骗人。 */
-      React.useEffect(() => {
-        if (!onCapChange || !capHeight || naturalPx === 0) return
-        if (capPx >= naturalPx - 1) onCapChange({ capHeight: false })
-      }, [capHeight, capPx, naturalPx, onCapChange])
       /** 设置页的一行：标题 + 说明在左，开关列在中，分块原样在右。 */
       const manageRow = (id, index) => {
         const over = markerOf(index)
@@ -2854,12 +2829,11 @@ ${FONT_FACES}
                     'button',
                     {
                       type: 'button',
-                      className: 'oqc-tipBtn',
+                      className: 'oqc-tipBtn oqc-htip',
+                      'data-hint': String(tip),
+                      'data-side': 'start',
+                      'data-wrap': 'true',
                       'aria-label': tip,
-                      onMouseEnter: () => setTipOpen(true),
-                      onMouseLeave: () => setTipOpen(false),
-                      onFocus: () => setTipOpen(true),
-                      onBlur: () => setTipOpen(false),
                     },
                     '?',
                   )
@@ -3002,7 +2976,6 @@ ${FONT_FACES}
               )
             : null,
           sub ? h('div', { className: 'oqc-sub' }, sub) : null,
-          tip && tipOpen ? h('div', { className: 'oqc-pop oqc-tipPop', role: 'tooltip' }, tip) : null,
         ),
         body ? h('div', { className: 'oqc-body' }, body) : null,
         h(
@@ -3216,7 +3189,6 @@ ${FONT_FACES}
       const [switching, setSwitching] = React.useState(null)
       /** 色卡弹窗：改动先留在草稿里，点「应用」才写回偏好。 */
       const [colorEdit, setColorEdit] = React.useState(null)
-      const [manageTipOpen, setManageTipOpen] = React.useState(false)
       React.useEffect(() => {
         if (!colorEdit) return undefined
         const onDown = (event) => {
@@ -3694,18 +3666,14 @@ ${FONT_FACES}
                   'button',
                   {
                     type: 'button',
-                    className: 'oqc-tipBtn',
+                    className: 'oqc-tipBtn oqc-htip',
+                    'data-hint': t('manageTip'),
+                    'data-side': 'start',
+                    'data-wrap': 'true',
                     'aria-label': t('manageTip'),
-                    onMouseEnter: () => setManageTipOpen(true),
-                    onMouseLeave: () => setManageTipOpen(false),
-                    onFocus: () => setManageTipOpen(true),
-                    onBlur: () => setManageTipOpen(false),
                   },
                   '?',
                 ),
-                manageTipOpen
-                  ? h('div', { className: 'oqc-pop oqc-tipPop oqc-tipPopWide', role: 'tooltip' }, t('manageTip'))
-                  : null,
               ),
               h(
                 'div',
