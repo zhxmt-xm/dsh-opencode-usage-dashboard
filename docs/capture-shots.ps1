@@ -104,6 +104,8 @@ $items = @(
   @{ Name = 'card-forecast'; Width = 340; Height = 900 },
   @{ Name = 'card-trend'; Width = 340; Height = 900 },
   @{ Name = 'card-models'; Width = 340; Height = 900 },
+  @{ Name = 'card-collapsed'; Width = 340; Height = 400 },
+  @{ Name = 'card-part-collapsed'; Width = 340; Height = 700 },
   @{ Name = 'settings-account'; Width = 680; Height = 900 },
   @{ Name = 'settings-display'; Width = 680; Height = 800 },
   @{ Name = 'settings-preview'; Width = 680; Height = 2000 },
@@ -137,3 +139,4 @@ foreach ($item in $items) {
 }
 
 Write-Host "截图已写入 $shots"
+

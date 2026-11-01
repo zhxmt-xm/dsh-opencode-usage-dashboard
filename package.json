@@ -1,6 +1,6 @@
 {
   "name": "dsh-opencode-usage-dashboard",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "type": "module",
   "description": "OpenCode 用量面板：在 DeepSeek Harness 侧栏查看 Go 订阅额度、Console 按量花费、用量趋势与月度预测。OpenCode quota, spend, usage and forecast dashboard for DeepSeek Harness.",
   "license": "MIT",

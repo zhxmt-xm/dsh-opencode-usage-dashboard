@@ -188,14 +188,44 @@ flowchart LR
 | `blocksVersion` | `1` | 默认分块集合的迁移标记 |
 | `collapsed` | `false` | 侧栏卡片是否手动收起 |
 | `capHeight` | `false` | 是否给分块区限高 |
-| `capPx` | `360` | 限高像素（200–799；填到 800 视为不限高，直接关闭） |
+| `capPx` | `360` | 限高像素，上限是量到的内容高度减 1（`contentPx - 1`），范围保护 120–1200 |
+| `contentPx` | `0` | 最近一次量到的分块内容自然高度，用来给 `capPx` 定上限 |
 | `todayWeek` | `true` | 用量块是否显示「本周」行 |
 | `todayMonth` | `true` | 用量块是否显示「本月」行 |
 | `todayCompact` | `false` | 用量块是否用简化版式（只留今日） |
+| `collapsedBlocks` | `[]` | 侧栏里被收起（只留标题行）的分块 id |
 
 读偏好时会校验类型、补齐缺失分块、忽略未知 id；坏数据回落到默认值。旧版 `accent` 会迁移到第一档颜色。
 
 `hidden` 的默认值在 1.1.0 从「全显示」改成「用量 + 额度」，迁移只在 `blocksVersion` 缺失且存下来的 `hidden` 为空数组（＝从没动过分块）时生效；动过分块的人保留自己的选择。用户改动任意偏好后会写回 `blocksVersion`，此后不再迁移。
+
+### 分块收起
+
+`collapsedBlocks` 存的是「只留标题行」的分块 id，和 `hidden`（整块不渲染）互不影响：隐藏优先，但收起状态会保留。
+
+收起后标题右侧改成该块的关键数据（都在 `LimitsCard` 里算）：
+
+| 分块 | 收起时显示 | 来源 |
+| --- | --- | --- |
+| 用量 | `当日 · $0.55` | `summary.costUsd` |
+| 额度重置时间 | `本月 · 23% 已用` | `quota.monthly.percent` |
+| 月度预测 | `11/27 · 163%` | `QuotaForecast` 里按当前速度外推到重置日 |
+| 趋势 | `11/01 · $0.55` / `18:00 · $0.12` | 最后一个桶，跟着 `trendMetric` 变 |
+| 模型 | 第一名模型名 | `models[0].model` |
+
+`.oqc-blockMeta` 是可压缩的（`flex:0 1 auto; min-width:0; max-width:72%`），文本包在 `.oqc-blockMetaText` 里做 `text-overflow:ellipsis`，窄卡片下只省略数字部分，标题和箭头不动。
+
+### 悬停提示
+
+所有提示统一走 `.oqc-htip[data-hint]`（`::before` 画气泡，0.2s 延迟淡入），不再用原生 `title`；问号按钮也走这一套。
+
+| 属性 | 作用 |
+| --- | --- |
+| `data-side="start"` / `"end"` | 气泡左对齐 / 右对齐（贴边的按钮用 `end`） |
+| `data-wrap="true"` | 长文案换行（固定 240px 宽） |
+| `data-up="true"` | 气泡朝上（表格底部、最后一个分块） |
+
+最后一个分块的提示由 `.oqc-slot:last-child .oqc-htip::before` 自动翻到上方；悬停收起箭头时 `.oqc-blockHead:has(.oqc-blockToggle:hover)::before` 会让标题的拖拽提示让位，避免两个气泡叠在一起。
 
 ### 设置导航图标
 

@@ -58,6 +58,8 @@ window.__ModuleLoader__.load({
       todayWeek: true,
       todayMonth: true,
       todayCompact: false,
+      /** 侧栏里被收起（只留标题行）的分块 id。 */
+      collapsedBlocks: [],
     }
     const INTERVALS = [30, 60, 300, 900]
     /** 内嵌的 Noto Sans SC 子集（OFL-1.1），只覆盖本插件用到的字符，避免外链字体。 */
@@ -89,6 +91,9 @@ window.__ModuleLoader__.load({
       tipHit: '预测 {date} 达到 100%',
       tipEnd: '周期结束 {date} 预计 {v}%',
       legendAverage: '日均 {v}%',
+      remainUnit: '剩余',
+      metaToday: '当日',
+      metaMonth: '本月',
       forecastHit: '按当前速度，预计 {date} 达到 100%',
       forecastNoHit: '按当前速度，本周期不会达到 100%',
       statTokens: 'Tokens',
@@ -99,6 +104,7 @@ window.__ModuleLoader__.load({
       remainMonth: '本月剩余',
       totalSpend: '总花费',
       toggleBlock: '在侧栏显示',
+      collapseLabel: '收起',
       blockTrend: '趋势',
       blockModels: '模型',
       noTrend: '这段时间没有用量数据',
@@ -142,6 +148,8 @@ window.__ModuleLoader__.load({
       compactLabel: '简化版本',
       noPreview: '当前没有可展示的数据',
       tipCompact: '只保留今日：油表缩到左侧，花费 / 请求数 / Tokens 各占一行。',
+      collapseBlock: '收起分块',
+      expandBlock: '展开分块',
       refreshData: '刷新数据',
       refreshHint: '重新向 OpenCode 读取一次额度与花费',
       needKey: '这个账户还没有 Key，请在 DSH 的 provider 设置里配置',
@@ -205,6 +213,9 @@ window.__ModuleLoader__.load({
       tipHit: 'Forecast reaches 100% on {date}',
       tipEnd: '{date} projected at {v}%',
       legendAverage: 'avg {v}%/day',
+      remainUnit: 'left',
+      metaToday: 'Today',
+      metaMonth: 'This month',
       forecastHit: 'On pace to hit 100% on {date}',
       forecastNoHit: 'Not on pace to hit the limit this period',
       statTokens: 'Tokens',
@@ -215,6 +226,7 @@ window.__ModuleLoader__.load({
       remainMonth: 'Monthly left',
       totalSpend: 'Total spend',
       toggleBlock: 'Show in sidebar',
+      collapseLabel: 'Collapsed',
       blockTrend: 'Trend',
       blockModels: 'Models',
       noTrend: 'No usage in this range',
@@ -258,6 +270,8 @@ window.__ModuleLoader__.load({
       compactLabel: 'Compact',
       noPreview: 'Nothing to show right now',
       tipCompact: 'Today only: the gauge shrinks to the left, and spend / requests / tokens each take one row.',
+      collapseBlock: 'Collapse block',
+      expandBlock: 'Expand block',
       refreshData: 'Refresh data',
       refreshHint: 'Re-read quota and spend from OpenCode',
       needKey: 'No key for this account — set it in the DSH provider settings',
@@ -320,6 +334,12 @@ ${FONT_FACES}
 /* 落点提示：贴在这一行的上下沿，一条线，缝里不会再出现第二条。 */
 .oqc-slot[data-over=before]{box-shadow:inset 0 2px 0 #3b82f6}
 .oqc-slot[data-over=after]{box-shadow:inset 0 -2px 0 #3b82f6}
+.oqc-blockToggle{flex:none;display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-left:3px;padding:0;border:0;border-radius:5px;background:transparent;color:var(--dsw-alias-label-tertiary);cursor:pointer;transition:color 140ms ease,background 140ms ease}
+.oqc-blockToggle svg{display:block;width:13px;height:13px}
+.oqc-blockToggle:hover{color:var(--dsw-alias-label-primary);background:color-mix(in srgb,var(--dsw-alias-label-primary) 8%,transparent)}
+.oqc-blockToggle:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--dsw-alias-brand-primary) 26%,transparent)}
+.oqc-blockToggle[data-collapsed=true] svg{transform:rotate(-90deg)}
+.oqc-block[data-collapsed=true]{padding-bottom:10px}
 .oqc-blockHead[data-grip=true]{cursor:grab}
 .oqc-blockHead[data-grip=true]:active{cursor:grabbing}
 .oqc-card[data-style=rail] .oqc-block{--oqc-rail:var(--oqc-rail-color,#3b82f6);border-left:2px solid var(--oqc-rail);border-radius:8px}
@@ -331,7 +351,8 @@ ${FONT_FACES}
 .oqc-blockTitle{flex:none;font-size:9.5px;font-weight:600;line-height:1;letter-spacing:.14em;text-transform:uppercase;color:var(--dsw-alias-label-secondary)}
 .oqc-card[data-variant=full] .oqc-blockTitle{font-size:11px;letter-spacing:.16em}
 .oqc-blockRule{flex:1;min-width:12px;height:1px;background:linear-gradient(90deg,var(--dsw-alias-border-l4),color-mix(in srgb,var(--dsw-alias-border-l2) 55%,transparent))}
-.oqc-blockMeta{flex:none;display:inline-flex;align-items:center;gap:5px;font-size:10px;line-height:1;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-tertiary);white-space:nowrap}
+.oqc-blockMeta{flex:0 1 auto;min-width:0;max-width:72%;display:inline-flex;align-items:center;gap:5px;font-size:10px;line-height:1;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-tertiary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oqc-blockMetaText{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .oqc-card[data-variant=full] .oqc-blockMeta{font-size:11px}
 .oqc-blockTag{font-weight:500;letter-spacing:.02em}
 .oqc-head{position:relative;display:flex;flex-direction:column;gap:3px;min-width:0}
@@ -488,10 +509,9 @@ ${FONT_FACES}
 .oqc-tlabel{min-width:0;font-size:10px;font-weight:500;line-height:1.4;color:var(--dsw-alias-label-secondary);white-space:nowrap}
 .oqc-td{min-width:0;font-size:11px;line-height:1.35;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--dsw-alias-label-primary)}
 .oqc-trHead .oqc-td{font-size:9px;font-weight:400;color:var(--dsw-alias-label-tertiary)}
-.oqc-tokenCell{position:relative;overflow:visible;cursor:help}
+.oqc-tokenCell{position:relative;overflow:visible;cursor:default}
 .oqc-tokenCell:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--dsw-alias-brand-primary) 26%,transparent)}
 .oqc-tokenText{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.oqc-tokenTip{right:0;left:auto;top:auto;bottom:calc(100% + 6px);transform:none;max-width:none;font-variant-numeric:tabular-nums}
 .oqc-card[data-variant=full] .oqc-tr{grid-template-columns:42px repeat(3,minmax(0,1fr));column-gap:18px;padding:8px 0}
 .oqc-card[data-variant=full] .oqc-trHead{padding:0 0 8px}
 .oqc-card[data-variant=full] .oqc-tlabel{font-size:11px}
@@ -521,6 +541,9 @@ ${FONT_FACES}
 .oqc-collapse:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--dsw-alias-brand-primary) 26%,transparent)}
 .oqc-collapseText{flex:1;min-width:0;text-align:left;font-weight:500;color:var(--dsw-alias-label-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .oqc-collapseValue{flex:none;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.oqc-collapseIcon{flex:none;display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;margin-left:-1px;color:var(--dsw-alias-label-tertiary)}
+.oqc-collapseIcon svg{display:block;width:13px;height:13px}
+.oqc-collapse:hover .oqc-collapseIcon{color:var(--dsw-alias-label-secondary)}
 .oqc-collapseLabel{flex:none;font-size:10px;color:var(--dsw-alias-label-tertiary);white-space:nowrap}
 /* 卡片顶部拖拽条：绝对定位浮在卡片顶部留白里，不占布局；hover 才露出横条。 */
 .oqc-resize{position:absolute;left:8px;right:8px;top:1px;height:7px;border-radius:6px;cursor:ns-resize;touch-action:none;z-index:2}
@@ -581,6 +604,14 @@ ${FONT_FACES}
 /* 长说明（问号按钮）允许换行，宽度固定，避免撑破面板。 */
 .oqc-htip[data-wrap=true]::before{white-space:normal;width:240px;max-width:240px;padding:6px 9px;line-height:1.45}
 .oqc-htip:hover::before{opacity:1;transition-delay:.2s}
+/* 最后一个分块的提示改到上方，避免贴着卡片底部被裁掉。 */
+.oqc-slot:last-child .oqc-htip::before{top:auto;bottom:calc(100% + 5px)}
+/* 表格里的提示统一朝上（下面就是表格边缘）。 */
+.oqc-htip[data-up=true]::before{top:auto;bottom:calc(100% + 5px)}
+/* 悬停收起箭头时，标题那条「拖拽」提示让位，免得两个气泡叠在一起。 */
+.oqc-blockHead .oqc-blockToggle::before{z-index:30}
+.oqc-blockHead:has(.oqc-blockToggle:hover)::before,
+.oqc-blockHead:has(.oqc-blockToggle:focus-visible)::before{opacity:0 !important;transition:none !important}
 /* 顶部拖拽条本身是绝对定位，别被 .oqc-htip 的 relative 覆盖。 */
 .oqc-card .oqc-resize{position:absolute}
 /* 开关：藏起原生 checkbox，只画轨道和圆点。 */
@@ -1127,6 +1158,7 @@ ${FONT_FACES}
         todayWeek: DEFAULT_PREFS.todayWeek,
         todayMonth: DEFAULT_PREFS.todayMonth,
         todayCompact: DEFAULT_PREFS.todayCompact,
+        collapsedBlocks: [],
       }
       try {
         const raw = window.localStorage.getItem(PREFS_KEY)
@@ -1190,6 +1222,9 @@ ${FONT_FACES}
           if (typeof parsed.todayWeek === 'boolean') prefs.todayWeek = parsed.todayWeek
           if (typeof parsed.todayMonth === 'boolean') prefs.todayMonth = parsed.todayMonth
           if (typeof parsed.todayCompact === 'boolean') prefs.todayCompact = parsed.todayCompact
+          if (Array.isArray(parsed.collapsedBlocks)) {
+            prefs.collapsedBlocks = parsed.collapsedBlocks.filter((id) => typeof id === 'string' && BLOCK_IDS.includes(id))
+          }
           if (typeof parsed.account === 'string') prefs.account = parsed.account
           if (typeof parsed.sa === 'string') prefs.sa = parsed.sa
           if (parsed.trendRange === '7d' || parsed.trendRange === '24h') prefs.trendRange = parsed.trendRange
@@ -1444,26 +1479,23 @@ ${FONT_FACES}
     }
 
     /**
-     * Tokens 单元格：平时显示紧凑值，hover / focus 时给出精确到个位的数字。
+     * Tokens 单元格：平时显示紧凑值，hover / focus 时用统一气泡给出精确到个位的数字。
      * @param {{ value: number }} props 组件参数。
      * @returns {any} React 元素。
      */
     function TokenCell({ value }) {
-      const [open, setOpen] = React.useState(false)
       const exact = Math.round(Number(value) || 0).toLocaleString('en-US')
       return h(
         'span',
         {
-          className: 'oqc-td oqc-tokenCell',
+          className: 'oqc-td oqc-tokenCell oqc-htip',
+          'data-side': 'end',
+          'data-up': 'true',
+          'data-hint': exact,
           tabIndex: 0,
           'aria-label': exact,
-          onMouseEnter: () => setOpen(true),
-          onMouseLeave: () => setOpen(false),
-          onFocus: () => setOpen(true),
-          onBlur: () => setOpen(false),
         },
         h('span', { className: 'oqc-tokenText' }, unitNode(compactNumber(value))),
-        open ? h('span', { className: 'oqc-tip oqc-tokenTip', role: 'tooltip' }, exact) : null,
       )
     }
 
@@ -1490,7 +1522,43 @@ ${FONT_FACES}
      * @param {{ title: string, meta?: any, color?: string }} props 组件参数。
      * @returns {any} React 元素。
      */
-    function BlockHead({ title, meta, color, head, check }) {
+    /**
+     * 分块标题右侧的收起箭头；和工具栏图标同一套线条。
+     * @param {{ collapsed: boolean, onToggle: any }} props 组件参数。
+     * @returns {any} React 元素。
+     */
+    function BlockToggle({ collapsed, onToggle, t }) {
+      return h(
+        'button',
+        {
+          type: 'button',
+          className: 'oqc-blockToggle oqc-htip',
+          'data-side': 'end',
+          'data-hint': collapsed ? t('expandBlock') : t('collapseBlock'),
+          'data-collapsed': collapsed ? 'true' : 'false',
+          'aria-expanded': collapsed ? 'false' : 'true',
+          'aria-label': collapsed ? t('expandBlock') : t('collapseBlock'),
+          onClick: (event) => {
+            event.stopPropagation()
+            if (onToggle) onToggle()
+          },
+        },
+        h(
+          'svg',
+          { viewBox: '0 0 16 16', 'aria-hidden': true },
+          h('path', {
+            d: 'M3.6 6.2 8 10.6l4.4-4.4',
+            fill: 'none',
+            stroke: 'currentColor',
+            'stroke-width': '1.9',
+            'stroke-linecap': 'round',
+            'stroke-linejoin': 'round',
+          }),
+        ),
+      )
+    }
+
+    function BlockHead({ title, meta, color, head, check, collapsed, onToggle, t }) {
       const hasMeta = meta !== null && meta !== undefined && meta !== '' && meta !== false
       const hint = head && head['data-hint'] ? ' oqc-htip' : ''
       return h(
@@ -1500,21 +1568,30 @@ ${FONT_FACES}
         h('span', { className: 'oqc-blockTick', style: color ? { background: color } : undefined }),
         h('span', { className: 'oqc-blockTitle' }, title),
         h('span', { className: 'oqc-blockRule' }),
-        hasMeta ? h('span', { className: 'oqc-blockMeta' }, meta) : null,
+        hasMeta
+          ? h(
+              'span',
+              { className: 'oqc-blockMeta' },
+              typeof meta === 'string' || typeof meta === 'number'
+                ? h('span', { className: 'oqc-blockMetaText' }, meta)
+                : meta,
+            )
+          : null,
+        onToggle ? h(BlockToggle, { collapsed: Boolean(collapsed), onToggle, t }) : null,
       )
     }
 
     /**
-     * 一个带标题的分块，把卡片切成互不相混的章节。
+     * 一个带标题的分块，把卡片切成互不相混的章节；收起来时只留标题行。
      * @param {{ title: string, meta?: any, color?: string, children?: any, head?: any, check?: any }} props 组件参数。
      * @returns {any} React 元素。
      */
-    function Block({ title, meta, color, children, head, check, off }) {
+    function Block({ title, meta, color, children, head, check, off, collapsed, onToggle, t }) {
       return h(
         'div',
-        { className: 'oqc-block', 'data-off': off ? 'true' : 'false' },
-        h(BlockHead, { title, meta, color, head, check }),
-        children,
+        { className: 'oqc-block', 'data-off': off ? 'true' : 'false', 'data-collapsed': collapsed ? 'true' : 'false' },
+        h(BlockHead, { title, meta, color, head, check, collapsed, onToggle, t }),
+        collapsed ? null : children,
       )
     }
 
@@ -1842,7 +1919,7 @@ ${FONT_FACES}
      * @param {{ period: any, monthly: any, color: string, full?: boolean, t: any }} props 组件参数。
      * @returns {any} React 元素。
      */
-    function QuotaForecast({ period, monthly, color = '#2ea043', full = false, t, head, check, off }) {
+    function QuotaForecast({ period, monthly, color = '#2ea043', full = false, t, head, check, off, collapsed, onToggle }) {
       const [tip, setTip] = React.useState(null)
       if (!monthly || typeof monthly.resetsAt !== 'string' || typeof monthly.percent !== 'number') return null
       const resetAt = Date.parse(monthly.resetsAt)
@@ -1961,14 +2038,20 @@ ${FONT_FACES}
       if (halfAt !== null && halfAt <= resetAt) pushX('half', halfAt)
       if (hit !== null && hit < resetAt) pushX('hit', hit)
 
+      /** 收起时显示「重置日期 + 按当前速度的预测值」。 */
+      const resetDate = new Date(resetAt)
+      const collapsedMeta = `${resetDate.getMonth() + 1}/${resetDate.getDate()} · ${Math.round(projected)}%`
       return h(
         Block,
         {
           title: t('blockForecast'),
-          meta: t('legendAverage', { v: perDay > 0 ? perDay.toFixed(1) : '0' }),
+          meta: collapsed ? collapsedMeta : t('legendAverage', { v: perDay > 0 ? perDay.toFixed(1) : '0' }),
           head,
           check,
           off,
+          collapsed,
+          onToggle,
+          t,
         },
         h(
         'div',
@@ -2224,6 +2307,8 @@ ${FONT_FACES}
       todayWeek = true,
       todayMonth = true,
       todayCompact = false,
+      collapsedBlocks = [],
+      onToggleCollapse,
       order,
       onReorder,
       hidden = [],
@@ -2317,13 +2402,63 @@ ${FONT_FACES}
         },
       })
 
-      const blockProps = (id, extra) => ({
-        /** 设置页的行自己带拖拽柄和开关，块里不再塞勾选框。 */
-        head: manage ? undefined : grip(id),
-        check: null,
-        off: manage && hidden.includes(id),
-        ...(extra || {}),
-      })
+      /** 收起状态与收起后标题右侧的关键数据。 */
+      const isCollapsed = (id) => collapsedBlocks.includes(id)
+      const trendLast = Array.isArray(trendRows) && trendRows.length > 0 ? trendRows[trendRows.length - 1] : null
+      /** 趋势：7 天给最近一天（月/日 · 值），24 小时给最近一小时（时:00 · 值）。 */
+      const trendCollapsed = (() => {
+        if (!trendLast) return null
+        const value =
+          metric === 'tokens'
+            ? compactNumber(trendLast.tokens)
+            : metric === 'requests'
+              ? compactNumber(trendLast.requests)
+              : money(Number(trendLast.costUsd) || 0)
+        const at = new Date(trendLast.date)
+        const valid = Number.isFinite(at.getTime())
+        if (range === '24h') {
+          /** 只到小时，不显示日期和时区。 */
+          const hour = valid ? `${String(at.getHours()).padStart(2, '0')}:00` : String(trendLast.date).slice(11, 16)
+          return `${hour} · ${value}`
+        }
+        /** 只到「月/日」，接口给整串 ISO 也裁掉时间部分。 */
+        const day = valid
+          ? `${at.getMonth() + 1}/${at.getDate()}`
+          : String(trendLast.date).slice(5, 10).replace('-', '/')
+        return `${day} · ${value}`
+      })()
+      /** 额度：本月 + 已用百分比。 */
+      const monthly = quota && quota.monthly ? quota.monthly : null
+      const quotaCollapsed =
+        monthly && typeof monthly.percent === 'number'
+          ? `${t('metaMonth')} · ${percentText(monthly.percent)} ${t('pctUnit')}`
+          : worst !== null
+            ? `${t('metaMonth')} · ${percentText(worst)} ${t('pctUnit')}`
+            : null
+      const collapsedMeta = {
+        today: spend !== null ? `${t('metaToday')} · ${money(spend)}` : null,
+        quota: quotaCollapsed,
+        /** 预测由 QuotaForecast 自己算「最终日期 + 预测值」。 */
+        forecast: null,
+        trend: trendCollapsed,
+        models: Array.isArray(models) && models.length > 0 ? models[0].model : null,
+      }
+
+      const blockProps = (id, extra) => {
+        const props = {
+          /** 设置页的行自己带拖拽柄和开关，块里不再塞勾选框。 */
+          head: manage ? undefined : grip(id),
+          check: null,
+          off: manage && hidden.includes(id),
+          collapsed: isCollapsed(id),
+          onToggle: onToggleCollapse ? () => onToggleCollapse(id) : undefined,
+          t,
+          ...(extra || {}),
+        }
+        /** 收起时用关键数据替换原来的 meta（原来是控件或空）。 */
+        if (props.collapsed && collapsedMeta[id] != null) props.meta = collapsedMeta[id]
+        return props
+      }
 
       /** 没有 Go 额度窗口，整块不渲染。 */
       const quotaSection = quota
@@ -2366,6 +2501,8 @@ ${FONT_FACES}
         head: manage ? undefined : grip('forecast'),
         check: null,
         off: manage && hidden.includes('forecast'),
+        collapsed: isCollapsed('forecast'),
+        onToggle: onToggleCollapse ? () => onToggleCollapse('forecast') : undefined,
       })
 
       /** 今日 / 本周 / 本月各一行：花费、请求数、Tokens。 */
@@ -2631,18 +2768,29 @@ ${FONT_FACES}
       const [capNow, setCapNow] = React.useState(null)
       /** 分块内容的自然高度：限高的真实上限就是它 - 1px。 */
       const [naturalPx, setNaturalPx] = React.useState(0)
+      /** 分块集合一变化（显隐、顺序、收起、简化版）就要重新量，限高上限跟着走。 */
+      const layoutKey = `${(hidden || []).join(',')}|${(order || []).join(',')}|${todayCompact ? 1 : 0}|${(collapsedBlocks || []).join(',')}`
       React.useEffect(() => {
         const node = blocksRef.current
-        if (!node || typeof ResizeObserver === 'undefined') return undefined
+        if (!node) return undefined
         const measure = () => {
           const next = node.scrollHeight
           setNaturalPx((prev) => (Math.abs(prev - next) > 1 ? next : prev))
         }
         measure()
-        const observer = new ResizeObserver(measure)
-        observer.observe(node)
-        return () => observer.disconnect()
-      }, [capHeight, capPx])
+        /** 限高生效时容器自身高度不变，只能盯内容变化。 */
+        const mutation =
+          typeof MutationObserver === 'undefined'
+            ? null
+            : new MutationObserver(() => measure())
+        if (mutation) mutation.observe(node, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'data-off', 'data-collapsed', 'hidden'] })
+        const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure)
+        if (observer) observer.observe(node)
+        return () => {
+          if (mutation) mutation.disconnect()
+          if (observer) observer.disconnect()
+        }
+      }, [layoutKey])
       /** 量到的自然高度同步回偏好，设置页才能把输入框上限设成「内容高度 - 1」。 */
       React.useEffect(() => {
         if (!onCapChange || naturalPx === 0) return
@@ -2733,6 +2881,12 @@ ${FONT_FACES}
                 checked: !hidden.includes(id),
                 color: tierColor,
                 onChange: () => onToggle && onToggle(id),
+              }),
+              h(Switch, {
+                label: t('collapseLabel'),
+                checked: isCollapsed(id),
+                color: tierColor,
+                onChange: () => onToggleCollapse && onToggleCollapse(id),
               }),
               id === 'today'
                 ? h(
@@ -3087,7 +3241,22 @@ ${FONT_FACES}
             ? h('span', { className: 'oqc-collapseLabel' }, label)
             : null,
           h('span', { className: 'oqc-collapseValue', style: { color: tone } }, value),
-          h('span', { className: 'oqc-caret' }, '▸'),
+          h(
+            'span',
+            { className: 'oqc-collapseIcon', 'aria-hidden': 'true' },
+            h(
+              'svg',
+              { viewBox: '0 0 16 16' },
+              h('path', {
+                d: 'M6.2 3.6 10.6 8l-4.4 4.4',
+                fill: 'none',
+                stroke: 'currentColor',
+                'stroke-width': '1.9',
+                'stroke-linecap': 'round',
+                'stroke-linejoin': 'round',
+              }),
+            ),
+          ),
         )
       }
 
@@ -3206,6 +3375,11 @@ ${FONT_FACES}
         todayWeek: settings.todayWeek !== false,
         todayMonth: settings.todayMonth !== false,
         todayCompact: Boolean(settings.todayCompact),
+        collapsedBlocks: Array.isArray(settings.collapsedBlocks) ? settings.collapsedBlocks : [],
+        onToggleCollapse: (id) => {
+          const current = Array.isArray(settings.collapsedBlocks) ? settings.collapsedBlocks : []
+          prefs.set({ collapsedBlocks: current.includes(id) ? current.filter((row) => row !== id) : current.concat(id) })
+        },
         busy: snapshot.busy,
       })
     }
@@ -3745,6 +3919,13 @@ ${FONT_FACES}
                   todayWeek: settings.todayWeek !== false,
                   todayMonth: settings.todayMonth !== false,
                   todayCompact: Boolean(settings.todayCompact),
+                  collapsedBlocks: Array.isArray(settings.collapsedBlocks) ? settings.collapsedBlocks : [],
+                  onToggleCollapse: (id) => {
+                    const current = Array.isArray(settings.collapsedBlocks) ? settings.collapsedBlocks : []
+                    prefs.set({
+                      collapsedBlocks: current.includes(id) ? current.filter((row) => row !== id) : current.concat(id),
+                    })
+                  },
                   quota: view.quota,
                   summary: view.summary,
                   daily: view.daily,

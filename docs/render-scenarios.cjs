@@ -1,4 +1,4 @@
-/*
+﻿/*
  * 生成 docs/scenarios.png 的底稿：直接跑 client.js 的组件，把三种账户形态
  * （每种都保留全部五个分块）和每个分块的多空态排进一张 HTML。
  *
@@ -491,6 +491,9 @@ injected.prefs.set({ hidden: ['forecast', 'trend', 'models'], todayCompact: true
 writeShot('card-compact', renderCard(VIEW_GO), 300)
 injected.prefs.set({ hidden: [], todayCompact: false, collapsed: true })
 writeShot('card-collapsed', renderCard(VIEW_GO), 300)
+injected.prefs.set({ hidden: [], collapsed: false, collapsedBlocks: ['trend', 'models'] })
+writeShot('card-part-collapsed', renderCard(VIEW_GO), 300)
+injected.prefs.set({ hidden: [], collapsed: false, collapsedBlocks: [] })
 injected.prefs.set({ hidden: [], collapsed: false, capHeight: true, capPx: 240 })
 writeShot('card-capped', renderCard(VIEW_GO), 300)
 /** 首屏 / 没有用量数据：summary 是 null，卡片不能炸。 */
@@ -641,3 +644,10 @@ fs.mkdirSync(OUT, { recursive: true })
 fs.writeFileSync(path.join(OUT, 'scenarios.html'), html)
 console.log('written docs/scenarios.html', html.length)
 process.exit(0)
+
+
+
+
+
+
+
