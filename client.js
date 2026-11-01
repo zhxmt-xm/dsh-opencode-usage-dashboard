@@ -573,11 +573,14 @@ ${FONT_FACES}
 .oqc-manageView{min-width:0}
 .oqc-manageEmpty{display:flex;align-items:center;justify-content:center;min-height:64px;padding:10px;border:1px dashed var(--dsw-alias-border-l4);border-radius:9px;font-size:11px;color:var(--dsw-alias-label-tertiary)}
 .oqc-crash{display:block;padding:8px 10px;border:1px dashed var(--dsw-alias-border-l4);border-radius:9px;font-size:11px;line-height:1.45;color:var(--dsw-alias-label-error)}
-/* 统一悬停提示：data-hint 顶掉原生 title，统一延迟 0.2s 淡入；问号按钮的提示是即时的，不走这条。 */
+/* 统一悬停提示：data-hint 顶掉原生 title，统一延迟 0.2s 淡入；问号按钮的提示是即时的，不走这条。
+   data-side 手动指定气泡朝哪边长：start 左对齐、end 右对齐、默认居中，避免贴边被裁。 */
 .oqc-htip{position:relative}
 .oqc-htip::before{content:attr(data-hint);position:absolute;left:50%;top:calc(100% + 5px);z-index:20;transform:translateX(-50%);padding:4px 8px;border-radius:6px;border:.5px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-1,#fff);box-shadow:0 6px 16px -6px rgba(0,0,0,.4);font-size:10.5px;line-height:1.4;font-weight:400;letter-spacing:0;text-transform:none;white-space:nowrap;color:var(--dsw-alias-label-secondary);opacity:0;pointer-events:none;transition:opacity 140ms ease}
+.oqc-htip[data-side=start]::before{left:0;transform:none}
+.oqc-htip[data-side=end]::before{left:auto;right:0;transform:none}
 .oqc-htip:hover::before{opacity:1;transition-delay:.2s}
-/* 顶部拖拽条本身是绝对定位，别被 .oqc-hint 的 relative 覆盖。 */
+/* 顶部拖拽条本身是绝对定位，别被 .oqc-htip 的 relative 覆盖。 */
 .oqc-card .oqc-resize{position:absolute}
 /* 开关：藏起原生 checkbox，只画轨道和圆点。 */
 .oqc-switch{position:relative;display:inline-flex;align-items:center;gap:8px;font-size:11.5px;line-height:1.3;color:var(--dsw-alias-label-secondary);cursor:pointer;user-select:none}
@@ -2135,7 +2138,7 @@ ${FONT_FACES}
       const tierName = tierNameAt(tiers, tier, t)
       return h(
         'div',
-        { className: 'oqc-row oqc-htip', 'data-hint': tierName },
+        { className: 'oqc-row oqc-htip', 'data-side': 'start', 'data-hint': tierName },
         h(
           'div',
           { className: 'oqc-top' },
@@ -2544,7 +2547,7 @@ ${FONT_FACES}
                   h(
                     'div',
                     { className: 'oqc-modelRow', key: row.model },
-                    h('span', { className: 'oqc-modelName oqc-htip', 'data-hint': row.model }, row.model),
+                    h('span', { className: 'oqc-modelName oqc-htip', 'data-side': 'start', 'data-hint': row.model }, row.model),
                     h(
                       'span',
                       { className: 'oqc-modelBar' },
@@ -2688,7 +2691,7 @@ ${FONT_FACES}
           },
           h(
             'div',
-            { className: 'oqc-manageRowHead oqc-htip', 'data-hint': t('dragHint'), ...grip(id), title: undefined },
+            { className: 'oqc-manageRowHead oqc-htip', 'data-side': 'start', 'data-hint': t('dragHint'), ...grip(id), title: undefined },
             h('span', { className: 'oqc-manageRowTitle' }, blockTitles[id]),
             h('span', { className: 'oqc-gripDots', 'aria-hidden': 'true' }),
           ),
@@ -2849,7 +2852,7 @@ ${FONT_FACES}
                   'button',
                   {
                     type: 'button',
-                    className: 'oqc-refresh oqc-htip',
+                    className: 'oqc-refresh oqc-htip', 'data-side': 'end',
                     'data-busy': busy ? 'true' : 'false',
                     'data-hint': t('refreshTitle'),
                     'aria-label': t('refreshTitle'),
@@ -2874,7 +2877,7 @@ ${FONT_FACES}
                   'button',
                   {
                     type: 'button',
-                    className: 'oqc-refresh oqc-htip',
+                    className: 'oqc-refresh oqc-htip', 'data-side': 'end',
                     'data-hint': t('openSettings'),
                     'aria-label': t('openSettings'),
                     onClick: onOpenSettings,
@@ -2906,7 +2909,7 @@ ${FONT_FACES}
                   'button',
                   {
                     type: 'button',
-                    className: 'oqc-refresh oqc-htip',
+                    className: 'oqc-refresh oqc-htip', 'data-side': 'end',
                     'data-hint': t('collapseCard'),
                     'aria-label': t('collapseCard'),
                     'aria-expanded': 'true',
@@ -2933,7 +2936,7 @@ ${FONT_FACES}
                   'button',
                   {
                     type: 'button',
-                    className: 'oqc-acctSwitch oqc-htip',
+                    className: 'oqc-acctSwitch oqc-htip', 'data-side': 'start',
                     'data-busy': accountSwitching ? 'true' : 'false',
                     disabled: accountLocked,
                     'data-hint': accountSwitching ? t('accountSwitching') : busy ? t('refreshing') : t('accountSwitch'),
@@ -3017,7 +3020,7 @@ ${FONT_FACES}
           'button',
           {
             type: 'button',
-            className: 'oqc-rail oqc-htip',
+            className: 'oqc-rail oqc-htip', 'data-side': 'start',
             'data-hint': t('ariaPanel'),
             'aria-label': t('ariaPanel'),
             style: { color: tierColorAt(tiers, tierIndexOf(worstRow, tiers)) },
@@ -3040,7 +3043,7 @@ ${FONT_FACES}
           'button',
           {
             type: 'button',
-            className: 'oqc-collapse oqc-htip',
+            className: 'oqc-collapse oqc-htip', 'data-side': 'start',
             'data-hint': t('expandCard'),
             'aria-label': t('expandCard'),
             'aria-expanded': 'false',
@@ -3385,7 +3388,7 @@ ${FONT_FACES}
               'button',
               {
                 type: 'button',
-                className: 'oqc-btn oqc-htip',
+                className: 'oqc-btn oqc-htip', 'data-side': 'end',
                 disabled: refreshing,
                 'data-hint': t('refreshHint'),
                 onClick: () => run(() => api.refresh({ fresh: true })),
@@ -3438,7 +3441,7 @@ ${FONT_FACES}
                               'button',
                               {
                                 type: 'button',
-                                className: 'oqc-keyBtn oqc-htip',
+                                className: 'oqc-keyBtn oqc-htip', 'data-side': 'end',
                                 disabled: busy,
                                 'data-hint': t('accountSwitchHint', { name: accountText(row) }),
                                 onClick: () => pickAccount(row.id),
@@ -3449,7 +3452,7 @@ ${FONT_FACES}
                     h(
                       'div',
                       { className: 'oqc-acctMeta' },
-                      h('code', { className: 'oqc-acctId oqc-htip', 'data-hint': row.id }, shortId(row.id)),
+                      h('code', { className: 'oqc-acctId oqc-htip', 'data-side': 'start', 'data-hint': row.id }, shortId(row.id)),
                       row.members && row.members.length > 1
                         ? h('span', { className: 'oqc-acctCount' }, ` · ${t('accountMembers', { n: row.members.length })}`)
                         : null,
@@ -3490,7 +3493,7 @@ ${FONT_FACES}
                 { className: 'oqc-colorField' },
                 h('button', {
                   type: 'button',
-                  className: 'oqc-railColorSwatch oqc-htip',
+                  className: 'oqc-railColorSwatch oqc-htip', 'data-side': 'start',
                   'data-hint': t('railColor'),
                   'aria-label': t('railColor'),
                   disabled: (settings.style || 'rail') !== 'rail',
@@ -3590,7 +3593,7 @@ ${FONT_FACES}
                     'button',
                     {
                       type: 'button',
-                      className: 'oqc-chipWrap oqc-htip',
+                      className: 'oqc-chipWrap oqc-htip', 'data-side': 'start',
                       'data-hint': t('pickColor'),
                       'aria-label': t('pickColor'),
                       onClick: () => setColorEdit({ kind: 'tier', index, value: tier.color }),
