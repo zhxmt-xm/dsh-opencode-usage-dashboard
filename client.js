@@ -50,9 +50,10 @@ window.__ModuleLoader__.load({
       hidden: DEFAULT_HIDDEN,
       /** 侧栏卡片是否手动收起。 */
       collapsed: false,
-      /** 侧栏卡片是否限高，以及限到多少像素。 */
+      /** 侧栏卡片是否限高，以及限到多少像素；contentPx 是最近一次量到的内容自然高度。 */
       capHeight: false,
       capPx: 360,
+      contentPx: 0,
       /** 用量分块：本周行、本月行、简化版式。 */
       todayWeek: true,
       todayMonth: true,
@@ -96,6 +97,7 @@ window.__ModuleLoader__.load({
       blockToday: '今日',
       blockUsage: '用量',
       remainMonth: '本月剩余',
+      totalSpend: '总花费',
       toggleBlock: '在侧栏显示',
       blockTrend: '趋势',
       blockModels: '模型',
@@ -211,6 +213,7 @@ window.__ModuleLoader__.load({
       blockToday: 'Today',
       blockUsage: 'Usage',
       remainMonth: 'Monthly left',
+      totalSpend: 'Total spend',
       toggleBlock: 'Show in sidebar',
       blockTrend: 'Trend',
       blockModels: 'Models',
@@ -518,6 +521,7 @@ ${FONT_FACES}
 .oqc-collapse:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--dsw-alias-brand-primary) 26%,transparent)}
 .oqc-collapseText{flex:1;min-width:0;text-align:left;font-weight:500;color:var(--dsw-alias-label-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .oqc-collapseValue{flex:none;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.oqc-collapseLabel{flex:none;font-size:10px;color:var(--dsw-alias-label-tertiary);white-space:nowrap}
 /* 卡片顶部拖拽条：绝对定位浮在卡片顶部留白里，不占布局；hover 才露出横条。 */
 .oqc-resize{position:absolute;left:8px;right:8px;top:1px;height:7px;border-radius:6px;cursor:ns-resize;touch-action:none;z-index:2}
 .oqc-resize::after{content:'';position:absolute;left:50%;top:2px;width:34px;height:3px;margin-left:-17px;border-radius:999px;background:color-mix(in srgb,var(--dsw-alias-label-primary) 24%,transparent);opacity:0;transition:opacity 140ms ease}
@@ -1119,6 +1123,7 @@ ${FONT_FACES}
         collapsed: DEFAULT_PREFS.collapsed,
         capHeight: DEFAULT_PREFS.capHeight,
         capPx: DEFAULT_PREFS.capPx,
+        contentPx: DEFAULT_PREFS.contentPx,
         todayWeek: DEFAULT_PREFS.todayWeek,
         todayMonth: DEFAULT_PREFS.todayMonth,
         todayCompact: DEFAULT_PREFS.todayCompact,
@@ -1174,8 +1179,14 @@ ${FONT_FACES}
           }
           if (typeof parsed.collapsed === 'boolean') prefs.collapsed = parsed.collapsed
           if (typeof parsed.capHeight === 'boolean') prefs.capHeight = parsed.capHeight
+          const contentPx = Number(parsed.contentPx)
+          if (Number.isFinite(contentPx)) prefs.contentPx = Math.min(2000, Math.max(0, Math.round(contentPx)))
           const capPx = Number(parsed.capPx)
-          if (Number.isFinite(capPx)) prefs.capPx = Math.min(799, Math.max(200, Math.round(capPx)))
+          if (Number.isFinite(capPx)) {
+            /** 上限永远是「内容自然高度 - 1px」；没量到内容高度时只做范围保护。 */
+            const ceiling = prefs.contentPx > 1 ? prefs.contentPx - 1 : 1200
+            prefs.capPx = Math.min(ceiling, Math.max(120, Math.round(capPx)))
+          }
           if (typeof parsed.todayWeek === 'boolean') prefs.todayWeek = parsed.todayWeek
           if (typeof parsed.todayMonth === 'boolean') prefs.todayMonth = parsed.todayMonth
           if (typeof parsed.todayCompact === 'boolean') prefs.todayCompact = parsed.todayCompact
@@ -2209,6 +2220,7 @@ ${FONT_FACES}
       onCapChange,
       capHeight = false,
       capPx = 360,
+      contentPx = 0,
       todayWeek = true,
       todayMonth = true,
       todayCompact = false,
@@ -2617,7 +2629,7 @@ ${FONT_FACES}
       const capDrag = React.useRef(null)
       const blocksRef = React.useRef(null)
       const [capNow, setCapNow] = React.useState(null)
-      /** 分块内容的自然高度：限高的真实上限就是它，超过就等于没限高。 */
+      /** 分块内容的自然高度：限高的真实上限就是它 - 1px。 */
       const [naturalPx, setNaturalPx] = React.useState(0)
       React.useEffect(() => {
         const node = blocksRef.current
@@ -2631,8 +2643,25 @@ ${FONT_FACES}
         observer.observe(node)
         return () => observer.disconnect()
       }, [capHeight, capPx])
-      /** 限高按偏好直接生效；拖动上限是「内容自然高度 - 1px」，永远留 1px 可滚。 */
-      const activeCap = capNow !== null ? capNow : capHeight ? capPx : null
+      /** 量到的自然高度同步回偏好，设置页才能把输入框上限设成「内容高度 - 1」。 */
+      React.useEffect(() => {
+        if (!onCapChange || naturalPx === 0) return
+        if (Math.abs(naturalPx - (contentPx || 0)) > 1) onCapChange({ contentPx: naturalPx })
+      }, [naturalPx, contentPx, onCapChange])
+      /** 只要比内容矮就应用限高（哪怕只矮 1px，也该能滚）。 */
+      const capApplies = (value) => value !== null && (naturalPx === 0 || value < naturalPx)
+      /**
+       * 拖动过程中，落到「内容高度 - 1px」这一档就等于不需要滚动，
+       * 这时先不套限高，免得手指还没松开就闪出一条 1px 的滚动条。
+       */
+      const activeCap =
+        capNow !== null
+          ? capApplies(capNow) && capNow < naturalPx - 1
+            ? capNow
+            : null
+          : capHeight && capApplies(capPx)
+            ? capPx
+            : null
       const capCeiling = naturalPx > 0 ? Math.max(120, naturalPx - 1) : 1200
       const startCapDrag = (event) => {
         if (!onCapChange) return
@@ -3026,15 +3055,22 @@ ${FONT_FACES}
         )
       }
 
-      /** 手动收起：只剩一行「OpenCode + 最紧一档」，点一下展开。 */
+      /** 手动收起：只剩一行「OpenCode + 月度余额」，没有月度额度就退化成总花费。 */
       if (settings.collapsed) {
-        const value = consoleMode
-          ? view.summary && view.summary.costUsd !== null
-            ? `$${view.summary.costUsd.toFixed(2)}`
-            : '—'
-          : worst === null
-            ? '—'
-            : percentText(worst)
+        const monthlyUsed =
+          quota && quota.monthly && typeof quota.monthly.percent === 'number' ? quota.monthly.percent : null
+        const remain = monthlyUsed === null ? null : Math.max(0, Math.min(100, 100 - monthlyUsed))
+        const totalCost = view.summary && typeof view.summary.costUsd === 'number' ? view.summary.costUsd : null
+        const value = remain !== null ? percentText(remain) : totalCost !== null ? `$${totalCost.toFixed(2)}` : '—'
+        /** 有月度额度显示「本月剩余」，没有额度就退化成「总花费」。 */
+        const label = remain !== null ? t('remainMonth') : totalCost !== null ? t('totalSpend') : null
+        /** 有月度额度时按已用比例上色；没有额度就用正文色显示金额。 */
+        const tone =
+          monthlyUsed !== null
+            ? tierColorAt(tiers, tierIndexOf({ percent: monthlyUsed }, tiers))
+            : totalCost !== null
+              ? 'var(--dsw-alias-label-primary)'
+              : undefined
         return h(
           'button',
           {
@@ -3047,11 +3083,10 @@ ${FONT_FACES}
           },
           h(Logo, { size: 14 }),
           h('span', { className: 'oqc-collapseText' }, 'OpenCode'),
-          h(
-            'span',
-            { className: 'oqc-collapseValue', style: { color: tierColorAt(tiers, tierIndexOf(worstRow, tiers)) } },
-            value,
-          ),
+          remain !== null || totalCost !== null
+            ? h('span', { className: 'oqc-collapseLabel' }, label)
+            : null,
+          h('span', { className: 'oqc-collapseValue', style: { color: tone } }, value),
           h('span', { className: 'oqc-caret' }, '▸'),
         )
       }
@@ -3167,6 +3202,7 @@ ${FONT_FACES}
         onCapChange: (patch) => prefs.set(patch),
         capHeight: Boolean(settings.capHeight),
         capPx: settings.capPx,
+        contentPx: settings.contentPx || 0,
         todayWeek: settings.todayWeek !== false,
         todayMonth: settings.todayMonth !== false,
         todayCompact: Boolean(settings.todayCompact),
@@ -3189,6 +3225,8 @@ ${FONT_FACES}
       const [switching, setSwitching] = React.useState(null)
       /** 色卡弹窗：改动先留在草稿里，点「应用」才写回偏好。 */
       const [colorEdit, setColorEdit] = React.useState(null)
+      /** 限高输入框的草稿：输入过程中不回写偏好，免得输入「7」被夹成 120。 */
+      const [capDraft, setCapDraft] = React.useState(null)
       React.useEffect(() => {
         if (!colorEdit) return undefined
         const onDown = (event) => {
@@ -3526,16 +3564,28 @@ ${FONT_FACES}
                 className: 'oqc-field oqc-fieldNum',
                 type: 'number',
                 min: 120,
-                max: 1200,
-                step: 20,
-                value: settings.capPx,
+                /** 上限就是量到的内容自然高度 - 1px；还没量到过就先给个宽范围。 */
+                max: settings.contentPx > 1 ? Math.max(120, settings.contentPx - 1) : 1200,
+                step: 1,
+                value: capDraft !== null ? capDraft : String(settings.capPx),
                 disabled: !settings.capHeight,
                 'aria-label': t('capLabel'),
+                onFocus: () => setCapDraft(String(settings.capPx)),
                 onChange: (event) => {
-                  const value = Number(event.target.value)
-                  if (!Number.isFinite(value)) return
-                  /** 真正的上限是卡片内容的自然高度，这里只做范围保护；超过自然高度时卡片会自动关掉限高。 */
-                  prefs.set({ capPx: Math.max(120, Math.min(1200, Math.round(value))) })
+                  const raw = event.target.value
+                  setCapDraft(raw)
+                  const value = Number(raw)
+                  if (!Number.isFinite(value) || value < 120) return
+                  const ceiling = settings.contentPx > 1 ? Math.max(120, settings.contentPx - 1) : 1200
+                  prefs.set({ capPx: Math.min(ceiling, Math.round(value)) })
+                },
+                onBlur: () => {
+                  const value = Number(capDraft)
+                  if (capDraft !== null && capDraft !== '' && Number.isFinite(value)) {
+                    const ceiling = settings.contentPx > 1 ? Math.max(120, settings.contentPx - 1) : 1200
+                    prefs.set({ capPx: Math.max(120, Math.min(ceiling, Math.round(value))) })
+                  }
+                  setCapDraft(null)
                 },
               }),
               h('span', { className: 'oqc-rangePct' }, 'px'),
