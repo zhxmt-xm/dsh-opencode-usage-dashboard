@@ -21,7 +21,7 @@
   <a href="#账户形态">账户形态</a> ·
   <a href="https://github.com/zhxmt-xm/dsh-opencode-usage-dashboard/blob/main/docs/README.md">开发与原理</a>
   <br>
-  <sub>English: <a href="README.en.md">README.en.md</a></sub>
+  <sub>English: <a href="https://github.com/zhxmt-xm/dsh-opencode-usage-dashboard/blob/main/README.en.md">README.en.md</a></sub>
 </p>
 
 > [!NOTE]

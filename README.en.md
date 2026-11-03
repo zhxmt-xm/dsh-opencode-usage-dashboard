@@ -21,7 +21,7 @@
   <a href="#account-shapes">Account shapes</a> ·
   <a href="https://github.com/zhxmt-xm/dsh-opencode-usage-dashboard/blob/main/docs/README.md">Development</a>
   <br>
-  <sub>简体中文: <a href="README.md">README.md</a></sub>
+  <sub>简体中文: <a href="https://github.com/zhxmt-xm/dsh-opencode-usage-dashboard/blob/main/README.md">README.md</a></sub>
 </p>
 
 > [!NOTE]
