@@ -207,11 +207,25 @@ Web 版 profile：
 dsh plugin --profile web add github:zhxmt-xm/dsh-opencode-usage-dashboard
 ```
 
+> `github:` 源需要本机能连 `github.com:443` 的 git 协议。连不上就改用 npm，或指定 tag 的 codeload tarball：
+> `dsh plugin --profile web add https://codeload.github.com/zhxmt-xm/dsh-opencode-usage-dashboard/tar.gz/refs/tags/v1.2.1`
+
 ### 从 npm 安装
 
 ```sh
 dsh plugin --profile desktop add dsh-opencode-usage-dashboard
 ```
+
+### 从旧包名迁移
+
+2026-10-30 之前的版本叫 `@local/dsh-opencode-quota`（0.1.0），和现在的包名**不是同一个包**。从旧版本升级必须**先卸载再安装**，否则两份并存、侧栏里仍然是旧卡片：
+
+```sh
+dsh plugin --profile web remove @local/dsh-opencode-quota
+dsh plugin --profile web add dsh-opencode-usage-dashboard
+```
+
+装完点「重启」（不是「刷新页面」），见上面的说明。
 
 ### 本地开发安装
 

@@ -164,11 +164,11 @@ function removeInstalled(path) {
   }
 }
 
-/** pnpm 上次失败可能留下 *_tmp_*。 */
+/** pnpm 上次失败可能留下 *_tmp_*；作用域包会写成 `@local+dsh-opencode-quota_tmp_*`，所以用 includes。 */
 function removeTemps(dir) {
   if (!lstatSync(dir, { throwIfNoEntry: false })) return
   for (const name of readdirSync(dir)) {
-    if (!name.startsWith('dsh-opencode-quota_tmp_') && !name.startsWith(`${PACKAGE_NAME}_tmp_`)) {
+    if (!name.includes('dsh-opencode-quota_tmp_') && !name.includes(`${PACKAGE_NAME}_tmp_`)) {
       continue
     }
     const tmp = join(dir, name)
